@@ -10,7 +10,25 @@ body {
     color: #ffffff;
     min-height: 100vh;
     font-size: 14px;
+    background-image: url('lua_brilhante_header_background.png'); /* Caminho da imagem */
+    background-size: cover;   /* Faz a imagem cobrir toda a div */
+    background-position: center; /* Centraliza a imagem */
+    position: relative; /* Necessário para posicionar o pseudo-elemento */
+  z-index: 1; /* Garante que o conteúdo principal fique acima da sobreposição */
 }
+
+body::before {
+    content: ''; /* Pseudo-elementos precisam da propriedade 'content' */
+  position: absolute; /* Posiciona a sobreposição em relação ao .hero-header */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.384); /* Fundo preto com 50% de opacidade */
+  z-index: -1;
+}
+
+
 
 .container {
     max-width: 100%;
@@ -20,7 +38,7 @@ body {
 
 /* Header Styles - Compacto */
 header {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.500);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 15px;
@@ -29,32 +47,26 @@ header {
 
 header h1 {
     font-size: 2.6rem;
+    font-family: cursive;
     margin-bottom: 5px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #acfff9;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 header h2 {
     font-size: 1.8rem;
     margin-bottom: 10px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #acfff9
 }
 
 header h3 {
     font-size: 1.2rem;
     margin-bottom: 25px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #acfff9
 }
 
 .master-controls {
@@ -79,17 +91,17 @@ header h3 {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
+    background: linear-gradient(135deg, #21f3bf9f 0%, rgba(255, 255, 255, 0.226) 100%);
     color: white;
 }
 
 .btn-secondary {
-    background: linear-gradient(45deg, #2196F3, #1976D2);
+    background: linear-gradient(45deg, #2195f3a8 0%, rgba(255, 255, 255, 0.226) 100%);
     color: white;
 }
 
 .btn-danger {
-    background: linear-gradient(45deg, #f44336, #d32f2f);
+    background: linear-gradient(45deg, #9b27b0d7 0%, rgba(255, 255, 255, 0.226) 100%);
     color: white;
 }
 
@@ -125,7 +137,7 @@ header h3 {
 
 .track-header {
     display: grid;
-    grid-template-columns: 120px 100px 90px 1fr;
+    grid-template-columns: 120px 100px 120px 1fr;
     gap: 10px;
     padding: 8px 12px;
     background: rgba(255, 255, 255, 0.1);
@@ -143,16 +155,16 @@ header h3 {
 /* Individual Track Styles - Ultra Compacto */
 .track {
     display: grid;
-    grid-template-columns: 100px 100px 90px 1fr;
+    grid-template-columns: 100px 100px 120px 1fr;
     gap: 10px;
     align-items: center;
-    padding: 8px 12px;
+    padding: 4px 12px;
     margin-bottom: 6px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.500) 0%, rgba(255, 255, 255, 0.03) 100%);
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease;
-    min-height: 50px;
+    height: fit-content;
 }
 
 .track:hover {
@@ -163,10 +175,11 @@ header h3 {
 }
 
 .track-info h3 {
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin-bottom: 2px;
-    color: #4ecdc4;
+    color: #acfff9;
     line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 .track-status {
@@ -174,6 +187,7 @@ header h3 {
     color: #888;
     font-style: italic;
     line-height: 1.1;
+    display: none;
 }
 
 /* Track Controls - Compactos */
@@ -188,7 +202,7 @@ header h3 {
     height: 28px;
     border: none;
     border-radius: 50%;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -198,23 +212,25 @@ header h3 {
 }
 
 .btn-mute {
-    background: linear-gradient(45deg, #ff9800, #f57c00);
-    color: white;
+    background: linear-gradient(45deg, #ff9900ec 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: #00e4d5;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 .btn-mute.active {
-    background: linear-gradient(45deg, #f44336, #d32f2f);
+    background: linear-gradient(45deg, #ff1100cb 0%, rgba(255, 255, 255, 0.226) 100%);
     box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
 }
 
 .btn-solo {
-    background: linear-gradient(45deg, #9c27b0, #7b1fa2);
-    color: white;
+    background: linear-gradient(45deg, #9b27b0d7 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: #00e4d5;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 .btn-solo.active {
-    background: linear-gradient(45deg, #e91e63, #c2185b);
-    box-shadow: 0 0 10px rgba(233, 30, 99, 0.5);
+    background: linear-gradient(45deg, #ff0037f8 0%, rgba(255, 255, 255, 0.226) 100%);
+    box-shadow: 0 0 10px rgba(155, 12, 59, 0.5);
 }
 
 .btn-play {
@@ -244,7 +260,7 @@ header h3 {
     width: 70px;
     height: 5px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.800);
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;
@@ -252,12 +268,12 @@ header h3 {
 
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: linear-gradient(45deg, #4ecdc4, #44b3a8);
-    cursor: pointer;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;    
+    box-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
     transition: all 0.2s ease;
 }
 
@@ -267,11 +283,12 @@ header h3 {
 }
 
 .volume-value {
-    font-size: 12px;
-    color: #4ecdc4;
+    font-size: 18px;
+    color: #acfff9;
     font-weight: 600;
     min-width: 25px;
     text-align: center;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 /* Waveform - Compacto */
@@ -300,7 +317,7 @@ header h3 {
 .timeline {
     position: relative;
     height: 30px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.411);
     border-radius: 6px;
     margin-bottom: 10px;
     overflow: hidden;
@@ -309,7 +326,7 @@ header h3 {
 }
 
 .timeline:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.322);
 }
 
 #timeline-canvas {
@@ -322,9 +339,10 @@ header h3 {
     position: absolute;
     top: 0;
     left: 0;
-    width: 2px;
+    width: 3px;
     height: 100%;
-    background: #ff6b6b;
+    background: #acfff9;
+    box-shadow: 3px 6px 8px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
     z-index: 10;
     transition: left 0.1s ease;
 }
@@ -340,14 +358,14 @@ header h3 {
 @media (max-width: 1200px) {
     .track-header,
     .track {
-        grid-template-columns: 100px 90px 100px 1fr;
+        grid-template-columns: 100px 90px 120px 1fr;
         gap: 8px;
     }
     
     .btn-mute, .btn-solo, .btn-play {
-        width: 26px;
-        height: 26px;
-        font-size: 12px;
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
     }
     
     .volume-slider {
@@ -355,7 +373,7 @@ header h3 {
     }
 
     .volume-value {
-        font-size: 12px;
+        font-size: 18px;
         min-width: 20px;
     }
 }
@@ -364,9 +382,9 @@ header h3 {
 
     header {
     background: rgba(0, 0, 0, 0.3);
-    padding: 30px 10px;
+    padding: 10px 10px;
     border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 17px;
     backdrop-filter: blur(10px);
 }
 
@@ -375,30 +393,21 @@ header h1 {
     font-size: 1.6rem;
     margin-bottom: 5px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #00e4d5;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 header h2 {
     font-size: 1.3rem;
     margin-bottom: 8px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 header h3 {
     font-size: 1rem;
     margin-bottom: 30px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 .btn {
@@ -429,13 +438,18 @@ header h3 {
     
     .track-header,
     .track {
-        grid-template-columns: 80px 80px 100px 1fr;
+        grid-template-columns: 80px 80px 120px 1fr;
         gap: 6px;
         padding: 6px 8px;
-    }
+        min-height: fit-content;
+}
+
+.tracks-container {
+    padding: 3px;
+}
     
     .track-info h3 {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
     
     .track-status {
@@ -443,9 +457,9 @@ header h3 {
     }
     
     .btn-mute, .btn-solo, .btn-play {
-        width: 24px;
-        height: 24px;
-        font-size: 15px;
+        width: 26px;
+        height: 26px;
+        font-size: 16px;
         gap: 2px;
     }
 
@@ -453,14 +467,14 @@ header h3 {
     width: 70px;
     height: 6px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.800);
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;
 }
     
     .volume-value {
-        font-size: 12px;
+        font-size: 16px;
         min-width: 20px;
     }
     
@@ -473,6 +487,9 @@ header h3 {
     header h1 {
         font-size: 1.5rem;
         margin-bottom: 8px;
+        color: #00e4d5;
+        line-height: 1.2;
+        text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
     }
 
     header h2 {
@@ -487,8 +504,15 @@ header h3 {
 
     .track-header,
     .track {
-        grid-template-columns: 80px 80px 110px 1fr;
-    }
+        grid-template-columns: 80px 80px 120px 1fr;
+        padding: 2px 5px;
+        min-height: fit-content;
+}
+
+.tracks-container {
+    padding: 3px;
+}
+    
     
     .btn {
         padding: 6px 12px;
@@ -498,7 +522,7 @@ header h3 {
     .btn-mute, .btn-solo, .btn-play {
         width: 25px;
         height: 25px;
-        font-size: 12px;
+        font-size: 15px;
     }
     
     .track-controls {
@@ -550,14 +574,14 @@ header h3 {
     .tracks-container {
         max-height: 60vh;
     }
-}
 
+}
 /* Estados especiais para mobile */
 @media (max-width: 480px) {
 
 header {
     background: rgba(0, 0, 0, 0.3);
-    padding: 30px 10px;
+    padding: 10px 10px;
     border-radius: 8px;
     margin-bottom: 15px;
     backdrop-filter: blur(10px);
@@ -567,31 +591,30 @@ header {
 header h1 {
     font-size: 1.3rem;
     margin-bottom: 5px;
-    text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    text-align: center;color: #00e4d5;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 header h2 {
     font-size: 1rem;
     margin-bottom: 8px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 header h3 {
     font-size: 0.8rem;
     margin-bottom: 30px;
     text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+}
+
+.tracks-container {
+    padding: 1px;
+}
+
+.track {
+    padding: 2px 2px;
+    min-height: fit-content;
 }
 
 .track-header {
@@ -620,11 +643,15 @@ header h3 {
     .btn-mute, .btn-solo, .btn-play {
         width: 25px;
         height: 25px;
-        font-size: 12px;
+        font-size: 15px;
     }
 
     .track-info {
         padding: 0px 2px 0px 5px;
+    }
+
+    .track-info h3 {
+        font-size: 17px;
     }
     
     .track-controls {
@@ -644,7 +671,7 @@ header h3 {
 
     .waveform-container {
     position: relative;
-    height: 25px;
+    height: 20px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 4px;
     overflow: hidden;
