@@ -1,510 +1,752 @@
-class WebDAW {
-    constructor() {
-        this.audioContext = null;
-        this.tracks = new Map();
-        this.masterGainNode = null;
-        this.isPlaying = false;
-        this.startTime = 0;
-        this.pauseTime = 0;
-        this.currentTime = 0;
-        this.duration = 0;
-        this.soloedTracks = new Set();
-        this.audioFiles = [
-            'audio/Violino 1.mp3',
-            'audio/Violino 2.mp3',
-            'audio/Violino 3.mp3',
-            'audio/Clarinete.mp3',
-            'audio/Cello.mp3',
-            'audio/Piano.mp3',
-            'audio/Guitarra.mp3',
-            'audio/Baixo.mp3',
-            'audio/Bateria.mp3',
-            //'audio/track10.mp3',
-            //'audio/track11.mp3',
-            //'audio/track12.mp3'
-        ];
-        
-        this.initializeAudioContext();
-        this.createTrackElements();
-        this.setupEventListeners();
-        this.setupTimelineUpdate();
-        this.loadAllAudioFiles();
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    color: #ffffff;
+    min-height: 100vh;
+    font-size: 14px;
+    background-image: url('lua_brilhante_header_background.png'); /* Caminho da imagem */
+    background-size: cover;   /* Faz a imagem cobrir toda a div */
+    background-position: center; /* Centraliza a imagem */
+    position: relative; /* Necessário para posicionar o pseudo-elemento */
+  z-index: 1; /* Garante que o conteúdo principal fique acima da sobreposição */
+}
+
+body::before {
+    content: ''; /* Pseudo-elementos precisam da propriedade 'content' */
+  position: absolute; /* Posiciona a sobreposição em relação ao .hero-header */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.603); /* Fundo preto com 50% de opacidade */
+  z-index: -1;
+}
+
+
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Header Styles - Compacto */
+header {
+    background: rgba(0, 0, 0, 0.500);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
+}
+
+header h1 {
+    font-size: 2.6rem;
+    font-family: cursive;
+    margin-bottom: 5px;
+    text-align: center;
+    color: #acfff9;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+}
+
+header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #acfff9
+}
+
+header h3 {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #acfff9
+}
+
+.master-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Button Styles - Compactos */
+.btn {
+    padding: 5px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #21f3bf9f 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: white;
+}
+
+.btn-secondary {
+    background: linear-gradient(45deg, #2195f3a8 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #9b27b0d7 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Master Volume - Compacto */
+.master-volume {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 15px;
+}
+
+/* Tracks Container - Layout Compacto */
+.tracks-container {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.track-header {
+    display: grid;
+    grid-template-columns: 120px 100px 120px 1fr;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* Individual Track Styles - Ultra Compacto */
+.track {
+    display: grid;
+    grid-template-columns: 100px 100px 120px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 4px 12px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.500) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+    height: fit-content;
+}
+
+.track:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.track-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+    color: #acfff9;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+}
+
+.track-status {
+    font-size: 10px;
+    color: #888;
+    font-style: italic;
+    line-height: 1.1;
+    display: none;
+}
+
+/* Track Controls - Compactos */
+.track-controls {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.btn-mute, .btn-solo, .btn-play {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-mute {
+    background: linear-gradient(45deg, #ff9900ec 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: #00e4d5;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+}
+
+.btn-mute.active {
+    background: linear-gradient(45deg, #ff1100cb 0%, rgba(255, 255, 255, 0.226) 100%);
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+}
+
+.btn-solo {
+    background: linear-gradient(45deg, #9b27b0d7 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: #00e4d5;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+}
+
+.btn-solo.active {
+    background: linear-gradient(45deg, #ff0037f8 0%, rgba(255, 255, 255, 0.226) 100%);
+    box-shadow: 0 0 10px rgba(155, 12, 59, 0.5);
+}
+
+.btn-play {
+    display: none;
+    background: linear-gradient(45deg, #4CAF50, #388e3c);
+    color: white;
+}
+
+.btn-play.playing {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+}
+
+.btn-mute:hover, .btn-solo:hover, .btn-play:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Volume Controls - Compactos */
+.track-volume-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+}
+
+.volume-slider {
+    width: 70px;
+    height: 5px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.800);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #4ecdc4, #44b3a8);
+    cursor: pointer;    
+    box-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+    transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(78, 205, 196, 0.5);
+}
+
+.volume-value {
+    font-size: 18px;
+    color: #acfff9;
+    font-weight: 600;
+    min-width: 25px;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+}
+
+/* Waveform - Compacto */
+.waveform-container {
+    position: relative;
+    height: 35px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.waveform {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Timeline - Compacto */
+.transport-controls {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.timeline {
+    position: relative;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.411);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.timeline:hover {
+    background: rgba(255, 255, 255, 0.322);
+}
+
+#timeline-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.playhead {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: #acfff9;
+    box-shadow: 3px 6px 8px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+    z-index: 10;
+    transition: left 0.1s ease;
+}
+
+.time-display {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #4ecdc4;
+}
+
+/* Responsive Design - Mobile First */
+@media (max-width: 1200px) {
+    .track-header,
+    .track {
+        grid-template-columns: 100px 90px 120px 1fr;
+        gap: 8px;
+    }
+    
+    .btn-mute, .btn-solo, .btn-play {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+    
+    .volume-slider {
+        width: 70px;
     }
 
-    async initializeAudioContext() {
-        try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.masterGainNode = this.audioContext.createGain();
-            this.masterGainNode.connect(this.audioContext.destination);
-            this.masterGainNode.gain.value = 0.7; // 70% volume
-            
-            console.log("Audio Context initialized successfully");
-        } catch (error) {
-            console.error("Failed to initialize Audio Context:", error);
-            alert("Seu navegador não suporta Web Audio API. Por favor, use um navegador mais recente.");
-        }
-    }
-
-    createTrackElements() {
-        const tracksContainer = document.querySelector(".tracks-container");
-        this.audioFiles.forEach((filePath, index) => {
-            const trackNumber = index + 1;
-            const trackName = filePath.split('/').pop().split('.')[0]; // Extract name from path
-            const trackElement = document.createElement("div");
-            trackElement.classList.add("track");
-            trackElement.dataset.track = trackNumber;
-            trackElement.innerHTML = `
-                <div class="track-info">
-                    <h3>${trackName.replace("track", "Trilha ")}</h3>
-                    <div class="track-status">Loading...</div>
-                </div>
-                <div class="track-controls">
-                    <button class="btn-mute" data-track="${trackNumber}">M</button>
-                    <button class="btn-solo" data-track="${trackNumber}">S</button>
-                    <button class="btn-play" data-track="${trackNumber}">▶</button>
-                </div>
-                <div class="track-volume-control">
-                    <input type="range" class="volume-slider" min="0" max="100" value="70" data-track="${trackNumber}">
-                    <span class="volume-value">70%</span>
-                </div>
-                <div class="waveform-container">
-                    <canvas class="waveform" data-track="${trackNumber}"></canvas>
-                </div>
-            `;
-            tracksContainer.appendChild(trackElement);
-        });
-    }
-
-    setupEventListeners() {
-        // Master controls
-        document.getElementById("playAll").addEventListener("click", () => this.playAll());
-        document.getElementById("pauseAll").addEventListener("click", () => this.pauseAll());
-        document.getElementById("stopAll").addEventListener("click", () => this.stopAll());
-        
-        // Master volume
-        const masterVolumeSlider = document.getElementById("masterVolume");
-        const masterVolumeValue = document.getElementById("masterVolumeValue");
-        
-        masterVolumeSlider.addEventListener("input", (e) => {
-            const volume = e.target.value / 100;
-            this.masterGainNode.gain.value = volume;
-            masterVolumeValue.textContent = e.target.value + "%";
-        });
-
-        // Timeline seek functionality
-        const timeline = document.querySelector(".timeline");
-        timeline.addEventListener("click", (e) => {
-            this.seekToPosition(e);
-        });
-
-        // Track controls (delegated to document as elements are created dynamically)
-        document.addEventListener("click", (e) => {
-            if (e.target.classList.contains("btn-mute")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                this.toggleMute(trackNumber);
-            } else if (e.target.classList.contains("btn-solo")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                this.toggleSolo(trackNumber);
-            } else if (e.target.classList.contains("btn-play")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                this.toggleTrackPlay(trackNumber);
-            }
-        });
-
-        document.addEventListener("input", (e) => {
-            if (e.target.classList.contains("volume-slider") && e.target.closest(".track")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                const volume = e.target.value / 100;
-                this.setTrackVolume(trackNumber, volume);
-                
-                // Update volume display
-                const volumeValue = e.target.parentElement.querySelector(".volume-value");
-                volumeValue.textContent = e.target.value + "%";
-            }
-        });
-    }
-
-    async loadAllAudioFiles() {
-        const loadPromises = this.audioFiles.map(async (filePath, index) => {
-            const trackNumber = index + 1;
-            const trackName = filePath.split('/').pop().split('.')[0];
-            this.updateTrackStatus(trackNumber, `Loading ${trackName}...`);
-            try {
-                const response = await fetch(filePath);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-                
-                const track = {
-                    buffer: audioBuffer,
-                    source: null,
-                    gainNode: this.audioContext.createGain(),
-                    isMuted: false,
-                    isSolo: false,
-                    isPlaying: false,
-                    volume: 0.7,
-                    fileName: trackName
-                };
-
-                track.gainNode.connect(this.masterGainNode);
-                track.gainNode.gain.value = track.volume;
-
-                this.tracks.set(trackNumber, track);
-
-                this.updateTrackStatus(trackNumber, `Loaded: ${trackName}`);
-                this.drawWaveform(trackNumber, audioBuffer);
-                
-                if (audioBuffer.duration > this.duration) {
-                    this.duration = audioBuffer.duration;
-                    this.updateTimeDisplay();
-                }
-                console.log(`Track ${trackNumber} loaded: ${trackName}`);
-            } catch (error) {
-                console.error(`Error loading audio file for track ${trackNumber} (${filePath}):`, error);
-                this.updateTrackStatus(trackNumber, `Error loading ${trackName}`);
-            }
-        });
-        await Promise.all(loadPromises);
-        this.updateTrackStatus(0, "All tracks loaded. Ready to play!"); // Update a general status if needed
-    }
-
-    updateTrackStatus(trackNumber, status) {
-        let statusElement;
-        if (trackNumber === 0) { // For a general status message
-            // You might want a dedicated element for general status, e.g., in the header
-            // For now, let's just log it.
-            console.log(status);
-        } else {
-            statusElement = document.querySelector(`.track[data-track="${trackNumber}"] .track-status`);
-            if (statusElement) {
-                statusElement.textContent = status;
-            }
-        }
-    }
-
-    drawWaveform(trackNumber, audioBuffer) {
-        const canvas = document.querySelector(`.waveform[data-track="${trackNumber}"]`);
-        if (!canvas) return;
-
-        const ctx = canvas.getContext("2d");
-        const width = canvas.width = canvas.offsetWidth;
-        const height = canvas.height = canvas.offsetHeight;
-
-        const data = audioBuffer.getChannelData(0);
-        const step = Math.ceil(data.length / width);
-        const amp = height / 2;
-
-        ctx.fillStyle = "rgba(78, 205, 196, 0.3)";
-        ctx.strokeStyle = "#4ecdc4";
-        ctx.lineWidth = 1;
-
-        ctx.beginPath();
-        for (let i = 0; i < width; i++) {
-            let min = 1.0;
-            let max = -1.0;
-            
-            for (let j = 0; j < step; j++) {
-                const datum = data[(i * step) + j];
-                if (datum < min) min = datum;
-                if (datum > max) max = datum;
-            }
-            
-            const x = i;
-            const yMin = (1 + min) * amp;
-            const yMax = (1 + max) * amp;
-            
-            ctx.fillRect(x, yMin, 1, yMax - yMin);
-        }
-    }
-
-    async playAll() {
-        if (this.audioContext.state === "suspended") {
-            await this.audioContext.resume();
-        }
-
-        this.isPlaying = true;
-        this.startTime = this.audioContext.currentTime - this.pauseTime;
-
-        for (const [trackNumber, track] of this.tracks) {
-            if (!track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
-                await this.playTrack(trackNumber);
-            }
-        }
-
-        this.updatePlayButtonStates();
-    }
-
-    pauseAll() {
-        this.isPlaying = false;
-        this.pauseTime = this.currentTime;
-
-        for (const [trackNumber, track] of this.tracks) {
-            this.stopTrack(trackNumber);
-        }
-
-        this.updatePlayButtonStates();
-    }
-
-    stopAll() {
-        this.isPlaying = false;
-        this.pauseTime = 0;
-        this.currentTime = 0;
-
-        for (const [trackNumber, track] of this.tracks) {
-            this.stopTrack(trackNumber);
-        }
-
-        this.updatePlayButtonStates();
-        this.updateTimeDisplay();
-        this.updatePlayhead();
-    }
-
-    async playTrack(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        if (!track || !track.buffer) return;
-
-        // Stop existing source if playing
-        if (track.source) {
-            track.source.stop();
-        }
-
-        // Create new source
-        track.source = this.audioContext.createBufferSource();
-        track.source.buffer = track.buffer;
-        track.source.connect(track.gainNode);
-
-        // Start playback from current position
-        const offset = this.pauseTime || 0;
-        track.source.start(0, offset);
-        track.isPlaying = true;
-
-        // Handle track end
-        track.source.onended = () => {
-            track.isPlaying = false;
-            this.updateTrackPlayButton(trackNumber);
-        };
-
-        this.updateTrackPlayButton(trackNumber);
-    }
-
-    stopTrack(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        if (!track || !track.source) return;
-
-        track.source.stop();
-        track.source = null;
-        track.isPlaying = false;
-        this.updateTrackPlayButton(trackNumber);
-    }
-
-    async toggleTrackPlay(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        if (!track) return;
-
-        if (track.isPlaying) {
-            this.stopTrack(trackNumber);
-        } else {
-            await this.playTrack(trackNumber);
-        }
-    }
-
-    toggleMute(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        if (!track) return;
-
-        track.isMuted = !track.isMuted;
-        track.gainNode.gain.value = track.isMuted ? 0 : track.volume;
-
-        // Update UI
-        const muteBtn = document.querySelector(`.btn-mute[data-track="${trackNumber}"]`);
-        const trackElement = document.querySelector(`.track[data-track="${trackNumber}"]`);
-        
-        if (track.isMuted) {
-            muteBtn.classList.add("active");
-            trackElement.classList.add("muted");
-        } else {
-            muteBtn.classList.remove("active");
-            trackElement.classList.remove("muted");
-        }
-    }
-
-    toggleSolo(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        if (!track) return;
-
-        track.isSolo = !track.isSolo;
-        
-        if (track.isSolo) {
-            this.soloedTracks.add(trackNumber);
-        } else {
-            this.soloedTracks.delete(trackNumber);
-        }
-
-        // Update all tracks based on solo state
-        for (const [num, t] of this.tracks) {
-            const soloBtn = document.querySelector(`.btn-solo[data-track="${num}"]`);
-            const trackElement = document.querySelector(`.track[data-track="${num}"]`);
-            
-            if (t.isSolo) {
-                soloBtn.classList.add("active");
-                trackElement.classList.add("solo");
-            } else {
-                soloBtn.classList.remove("active");
-                trackElement.classList.remove("solo");
-            }
-
-            // Adjust volume based on solo state
-            if (this.soloedTracks.size > 0) {
-                t.gainNode.gain.value = (t.isSolo && !t.isMuted) ? t.volume : 0;
-            } else {
-                t.gainNode.gain.value = t.isMuted ? 0 : t.volume;
-            }
-        }
-    }
-
-    setTrackVolume(trackNumber, volume) {
-        const track = this.tracks.get(trackNumber);
-        if (!track) return;
-
-        track.volume = volume;
-        if (!track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
-            track.gainNode.gain.value = volume;
-        }
-    }
-
-    updatePlayButtonStates() {
-        const playAllBtn = document.getElementById("playAll");
-        
-        if (this.isPlaying) {
-            playAllBtn.textContent = "⏸ Pause All";
-            playAllBtn.className = "btn btn-secondary";
-        } else {
-            playAllBtn.textContent = "▶ Play All";
-            playAllBtn.className = "btn btn-primary";
-        }
-    }
-
-    updateTrackPlayButton(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        const playBtn = document.querySelector(`.btn-play[data-track="${trackNumber}"]`);
-        const trackElement = document.querySelector(`.track[data-track="${trackNumber}"]`);
-        
-        if (!track || !playBtn) return;
-
-        if (track.isPlaying) {
-            playBtn.textContent = "⏸";
-            playBtn.classList.add("playing");
-            trackElement.classList.add("playing");
-        } else {
-            playBtn.textContent = "▶";
-            playBtn.classList.remove("playing");
-            trackElement.classList.remove("playing");
-        }
-    }
-
-    setupTimelineUpdate() {
-        const updateTimeline = () => {
-            if (this.isPlaying && this.audioContext) {
-                this.currentTime = this.audioContext.currentTime - this.startTime;
-                
-                if (this.currentTime >= this.duration) {
-                    this.stopAll();
-                    return;
-                }
-                
-                this.updateTimeDisplay();
-                this.updatePlayhead();
-            }
-            
-            requestAnimationFrame(updateTimeline);
-        };
-        
-        updateTimeline();
-    }
-
-    updateTimeDisplay() {
-        const currentTimeElement = document.getElementById("currentTime");
-        const totalTimeElement = document.getElementById("totalTime");
-        
-        if (currentTimeElement) {
-            currentTimeElement.textContent = this.formatTime(this.currentTime);
-        }
-        
-        if (totalTimeElement) {
-            totalTimeElement.textContent = this.formatTime(this.duration);
-        }
-    }
-
-    updatePlayhead() {
-        const playhead = document.getElementById("playhead");
-        const timeline = document.querySelector(".timeline");
-        
-        if (playhead && timeline && this.duration > 0) {
-            const percentage = (this.currentTime / this.duration) * 100;
-            playhead.style.left = `${Math.min(percentage, 100)}%`;
-        }
-    }
-
-    seekToPosition(event) {
-        if (this.duration === 0) return; // No audio loaded
-        
-        const timeline = event.currentTarget;
-        const rect = timeline.getBoundingClientRect();
-        const clickX = event.clientX - rect.left;
-        const timelineWidth = rect.width;
-        
-        // Calculate the percentage of the timeline clicked
-        const percentage = Math.max(0, Math.min(1, clickX / timelineWidth));
-        const seekTime = percentage * this.duration;
-        
-        // Update current time and pause time
-        this.pauseTime = seekTime;
-        this.currentTime = seekTime;
-        
-        // If currently playing, restart all tracks from the new position
-        if (this.isPlaying) {
-            this.stopAllTracks();
-            this.startTime = this.audioContext.currentTime - seekTime;
-            
-            // Restart playing tracks from new position
-            for (const [trackNumber, track] of this.tracks) {
-                if (!track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
-                    this.playTrack(trackNumber);
-                }
-            }
-        }
-        
-        // Update UI
-        this.updateTimeDisplay();
-        this.updatePlayhead();
-        
-        console.log(`Seeked to: ${this.formatTime(seekTime)} (${(percentage * 100).toFixed(1)}%)`);
-    }
-
-    stopAllTracks() {
-        for (const [trackNumber, track] of this.tracks) {
-            if (track.source) {
-                track.source.stop();
-                track.source = null;
-                track.isPlaying = false;
-            }
-        }
-    }
-
-    formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    .volume-value {
+        font-size: 18px;
+        min-width: 20px;
     }
 }
 
-// Initialize the DAW when the page loads
-document.addEventListener("DOMContentLoaded", () => {
-    window.webDAW = new WebDAW();
+@media (max-width: 900px) {
+
+    header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 10px;
+    border-radius: 8px;
+    margin-bottom: 17px;
+    backdrop-filter: blur(10px);
+}
+
+
+header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 5px;
+    text-align: center;
+    color: #00e4d5;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+}
+
+header h2 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+header h3 {
+    font-size: 1rem;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.btn {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.master-volume {
+    grid-column: 1 / -1;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    width: fit-content;
+}
+
+    .container {
+        padding: 8px;
+    }
     
-    // Handle browser audio context restrictions
-    document.addEventListener("click", async () => {
-        if (window.webDAW.audioContext && window.webDAW.audioContext.state === "suspended") {
-            await window.webDAW.audioContext.resume();
-        }
-    }, { once: true });
-});
+    .track-header,
+    .track {
+        grid-template-columns: 80px 80px 120px 1fr;
+        gap: 6px;
+        padding: 6px 8px;
+        min-height: fit-content;
+}
+
+.tracks-container {
+    padding: 3px;
+}
+    
+    .track-info h3 {
+        font-size: 1.1rem;
+    }
+    
+    .track-status {
+        font-size: 9px;
+    }
+    
+    .btn-mute, .btn-solo, .btn-play {
+        width: 26px;
+        height: 26px;
+        font-size: 16px;
+        gap: 2px;
+    }
+
+    .volume-slider {
+    width: 70px;
+    height: 6px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.800);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
+    
+    .volume-value {
+        font-size: 16px;
+        min-width: 20px;
+    }
+    
+    .waveform-container {
+        height: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: #00e4d5;
+        line-height: 1.2;
+        text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+    }
+
+    header h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    header h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .track-header,
+    .track {
+        grid-template-columns: 80px 80px 120px 1fr;
+        padding: 2px 5px;
+        min-height: fit-content;
+}
+
+.tracks-container {
+    padding: 3px;
+}
+    
+    
+    .btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .btn-mute, .btn-solo, .btn-play {
+        width: 25px;
+        height: 25px;
+        font-size: 15px;
+    }
+    
+    .track-controls {
+        gap: 2px;
+    }
+    
+    .volume-slider {
+        width: 70px;
+        height: 4px;
+    }
+    
+    .volume-slider::-webkit-slider-thumb {
+        width: 18px;
+        height: 18px;
+    }
+
+    .waveform-container {
+    position: relative;
+    height: 25px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.waveform {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+        
+    .track-controls {
+        justify-content: center;
+        gap: 6px;
+    }
+    
+    .track-volume-control {
+        justify-content: center;
+    }
+    
+    .volume-slider {
+        width: 80px;
+    }
+    
+    .waveform-container {
+        height: 25px;
+        margin-top: 5px;
+    }
+    
+    .tracks-container {
+        max-height: 60vh;
+    }
+
+}
+/* Estados especiais para mobile */
+@media (max-width: 480px) {
+
+header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 3px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
+}
+
+
+header h1 {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    text-align: center;color: #00e4d5;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
+}
+
+header h2 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+header h3 {
+    font-size: 0.8rem;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.tracks-container {
+    padding: 1px;
+}
+
+.track {
+    padding: 6px 2px;
+    min-height: fit-content;
+}
+
+.track-header {
+    display: grid;
+    grid-template-columns: 70px 90px 100px 5fr;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    
+    .btn-mute, .btn-solo, .btn-play {
+        width: 25px;
+        height: 25px;
+        font-size: 15px;
+    }
+
+    .track-info {
+        padding: 0px 2px 0px 5px;
+    }
+
+    .track-info h3 {
+        font-size: 17px;
+    }
+    
+    .track-controls {
+        gap: 2px;
+        padding: 0px 2px 0px 0px;
+    }
+    
+    .volume-slider {
+        width: 70px;
+        height: 4px;
+    }
+    
+    .volume-slider::-webkit-slider-thumb {
+        width: 18px;
+        height: 18px;
+    }
+
+    .waveform-container {
+    position: relative;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.waveform {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* Track States */
+.track.muted {
+    opacity: 0.6;
+}
+
+.track.solo {
+    border-color: #e91e63;
+    box-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
+}
+
+.track.playing {
+    border-color: #4CAF50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+/* Scrollbar personalizada para tracks container */
+.tracks-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tracks-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.tracks-container::-webkit-scrollbar-thumb {
+    background: rgba(78, 205, 196, 0.6);
+    border-radius: 3px;
+}
+
+.tracks-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(78, 205, 196, 0.8);
+}
+
+/* Otimizações para telas muito pequenas */
+@media (max-width: 320px) {
+    .container {
+        padding: 5px;
+    }
+    
+    .track {
+        padding: 4px;
+        margin-bottom: 4px;
+    }
+    
+    .track-info h3 {
+        font-size: 0.7rem;
+    }
+    
+    .btn-mute, .btn-solo, .btn-play {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+}
