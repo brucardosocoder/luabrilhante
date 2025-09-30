@@ -28,8 +28,8 @@ header {
 }
 
 header h1 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
+    font-size: 2.6rem;
+    margin-bottom: 5px;
     text-align: center;
     background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
     -webkit-background-clip: text;
@@ -38,8 +38,18 @@ header h1 {
 }
 
 header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    text-align: center;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+header h3 {
     font-size: 1.2rem;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
     text-align: center;
     background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
     -webkit-background-clip: text;
@@ -57,10 +67,10 @@ header h2 {
 
 /* Button Styles - Compactos */
 .btn {
-    padding: 8px 16px;
+    padding: 5px 16px;
     border: none;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -98,9 +108,9 @@ header h2 {
     align-items: center;
     gap: 8px;
     background: rgba(255, 255, 255, 0.1);
-    padding: 8px 15px;
+    padding: 5px 15px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 15px;
 }
 
 /* Tracks Container - Layout Compacto */
@@ -115,7 +125,7 @@ header h2 {
 
 .track-header {
     display: grid;
-    grid-template-columns: 120px 100px 80px 1fr;
+    grid-template-columns: 120px 100px 90px 1fr;
     gap: 10px;
     padding: 8px 12px;
     background: rgba(255, 255, 255, 0.1);
@@ -133,7 +143,7 @@ header h2 {
 /* Individual Track Styles - Ultra Compacto */
 .track {
     display: grid;
-    grid-template-columns: 120px 100px 80px 1fr;
+    grid-template-columns: 100px 100px 90px 1fr;
     gap: 10px;
     align-items: center;
     padding: 8px 12px;
@@ -153,7 +163,7 @@ header h2 {
 }
 
 .track-info h3 {
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin-bottom: 2px;
     color: #4ecdc4;
     line-height: 1.2;
@@ -178,7 +188,7 @@ header h2 {
     height: 28px;
     border: none;
     border-radius: 50%;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -208,6 +218,7 @@ header h2 {
 }
 
 .btn-play {
+    display: none;
     background: linear-gradient(45deg, #4CAF50, #388e3c);
     color: white;
 }
@@ -230,8 +241,8 @@ header h2 {
 }
 
 .volume-slider {
-    width: 60px;
-    height: 4px;
+    width: 70px;
+    height: 5px;
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.2);
     outline: none;
@@ -256,7 +267,7 @@ header h2 {
 }
 
 .volume-value {
-    font-size: 10px;
+    font-size: 12px;
     color: #4ecdc4;
     font-weight: 600;
     min-width: 25px;
@@ -329,35 +340,102 @@ header h2 {
 @media (max-width: 1200px) {
     .track-header,
     .track {
-        grid-template-columns: 100px 90px 70px 1fr;
+        grid-template-columns: 100px 90px 100px 1fr;
         gap: 8px;
     }
     
     .btn-mute, .btn-solo, .btn-play {
         width: 26px;
         height: 26px;
-        font-size: 10px;
+        font-size: 12px;
     }
     
     .volume-slider {
-        width: 50px;
+        width: 70px;
+    }
+
+    .volume-value {
+        font-size: 12px;
+        min-width: 20px;
     }
 }
 
 @media (max-width: 900px) {
+
+    header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 30px 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
+}
+
+
+header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 5px;
+    text-align: center;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+header h2 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    text-align: center;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+header h3 {
+    font-size: 1rem;
+    margin-bottom: 30px;
+    text-align: center;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.master-volume {
+    grid-column: 1 / -1;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    width: fit-content;
+}
+
     .container {
         padding: 8px;
     }
     
     .track-header,
     .track {
-        grid-template-columns: 80px 80px 60px 1fr;
+        grid-template-columns: 80px 80px 100px 1fr;
         gap: 6px;
         padding: 6px 8px;
     }
     
     .track-info h3 {
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
     
     .track-status {
@@ -367,16 +445,22 @@ header h2 {
     .btn-mute, .btn-solo, .btn-play {
         width: 24px;
         height: 24px;
-        font-size: 9px;
+        font-size: 15px;
         gap: 2px;
     }
-    
+
     .volume-slider {
-        width: 40px;
-    }
+    width: 70px;
+    height: 6px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+}
     
     .volume-value {
-        font-size: 9px;
+        font-size: 12px;
         min-width: 20px;
     }
     
@@ -388,136 +472,28 @@ header h2 {
 @media (max-width: 600px) {
     header h1 {
         font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+
+    header h2 {
+        font-size: 1.2rem;
         margin-bottom: 10px;
     }
-    
-    .master-controls {
-        flex-direction: column;
-        gap: 10px;
+
+    header h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .track-header,
+    .track {
+        grid-template-columns: 80px 80px 110px 1fr;
     }
     
     .btn {
         padding: 6px 12px;
         font-size: 12px;
     }
-    
-    .track-header,
-    .track {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        text-align: center;
-        padding: 8px;
-    }
-    
-    .track-controls {
-        justify-content: center;
-        gap: 6px;
-    }
-    
-    .track-volume-control {
-        justify-content: center;
-    }
-    
-    .volume-slider {
-        width: 80px;
-    }
-    
-    .waveform-container {
-        height: 25px;
-        margin-top: 5px;
-    }
-    
-    .tracks-container {
-        max-height: 60vh;
-    }
-}
-
-/* Estados especiais para mobile */
-@media (max-width: 480px) {
-    .track {
-    display: grid;
-    grid-template-columns: 70px 80px 90px 1fr;
-    gap: 10px;
-    align-items: center;
-    padding: 8px 12px;
-    margin-bottom: 6px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease;
-    min-height: 50px;
-}
-
-header {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 30px 10px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    backdrop-filter: blur(10px);
-}
-
-
-header h1 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-header h2 {
-    font-size: 1rem;
-    margin-bottom: 30px;
-    text-align: center;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.track-header {
-    display: grid;
-    grid-template-columns: 70px 80px 90px 1fr;
-    gap: 10px;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    margin-bottom: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 11px;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-}
-
-.master-controls {
-    display: grid;
-    grid-template-columns: 95px 95px 95px 90px;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-}
-
-.master-controls button {
-    font-size: 10px;
-    padding: 5% 10%;
-}
-
-.master-volume {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 5px 3px;
-    border-radius: 10px;
-    font-size: 12px;
-}
     
     .btn-mute, .btn-solo, .btn-play {
         width: 25px;
@@ -552,7 +528,132 @@ header h2 {
     height: 100%;
     display: block;
 }
+        
+    .track-controls {
+        justify-content: center;
+        gap: 6px;
+    }
+    
+    .track-volume-control {
+        justify-content: center;
+    }
+    
+    .volume-slider {
+        width: 80px;
+    }
+    
+    .waveform-container {
+        height: 25px;
+        margin-top: 5px;
+    }
+    
+    .tracks-container {
+        max-height: 60vh;
+    }
+}
 
+/* Estados especiais para mobile */
+@media (max-width: 480px) {
+
+header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 30px 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
+}
+
+
+header h1 {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    text-align: center;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+header h2 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-align: center;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+header h3 {
+    font-size: 0.8rem;
+    margin-bottom: 30px;
+    text-align: center;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.track-header {
+    display: grid;
+    grid-template-columns: 70px 90px 80px 5fr;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    
+    .btn-mute, .btn-solo, .btn-play {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+    }
+
+    .track-info {
+        padding: 0px 2px 0px 5px;
+    }
+    
+    .track-controls {
+        gap: 2px;
+        padding: 0px 2px 0px 0px;
+    }
+    
+    .volume-slider {
+        width: 70px;
+        height: 4px;
+    }
+    
+    .volume-slider::-webkit-slider-thumb {
+        width: 18px;
+        height: 18px;
+    }
+
+    .waveform-container {
+    position: relative;
+    height: 25px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.waveform {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 /* Loading Animation */
@@ -619,4 +720,6 @@ header h2 {
         width: 28px;
         height: 28px;
     }
+}
+
 }
