@@ -136,7 +136,7 @@ header h3 {
 }
 
 .track-header {
-    display: grid;
+    display: none;
     grid-template-columns: 120px 100px 120px 1fr;
     gap: 10px;
     padding: 8px 12px;
@@ -213,7 +213,7 @@ header h3 {
 
 .btn-mute {
     background: linear-gradient(45deg, #ff9900ec 0%, rgba(255, 255, 255, 0.226) 100%);
-    color: #00e4d5;
+    color: #acfff9;
     text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
@@ -224,7 +224,7 @@ header h3 {
 
 .btn-solo {
     background: linear-gradient(45deg, #9b27b0d7 0%, rgba(255, 255, 255, 0.226) 100%);
-    color: #00e4d5;
+    color: #acfff9;
     text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
@@ -234,13 +234,13 @@ header h3 {
 }
 
 .btn-play {
-    display: none;
-    background: linear-gradient(45deg, #4CAF50, #388e3c);
-    color: white;
+    background: linear-gradient(135deg, #21f3bf9f 0%, rgba(255, 255, 255, 0.226) 100%);
+    color: #acfff9;
+    text-shadow: 1px 1px 2px rgb(140, 0, 255), 0 0 1em blue, 0 0 0.2em blue;
 }
 
 .btn-play.playing {
-    background: linear-gradient(45deg, #2196F3, #1976D2);
+    background: linear-gradient(45deg, #2195f3dc 0%, rgba(255, 255, 255, 0.226) 100%);
 }
 
 .btn-mute:hover, .btn-solo:hover, .btn-play:hover {
@@ -618,7 +618,7 @@ header h3 {
 }
 
 .track-header {
-    display: grid;
+    display: none;
     grid-template-columns: 70px 90px 100px 5fr;
     gap: 10px;
     padding: 8px 10px;
