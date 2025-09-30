@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:url" content="https://brucardosocoder.github.io/luabrilhante">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Lua Brilhante (Valsa Em 3 Cores)">
+    <meta property="og:description" content="Lua Brilhante (Valsa Em 3 Cores)">
+    <meta property="og:image" content="https://brucardosocoder.github.io/luabrilhante/lua_brilhante_header_background.png">   
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="https://brucardosocoder.github.io/luabrilhante">
+    <meta property="twitter:url" content="https://brucardosocoder.github.io/luabrilhante">
+    <meta name="twitter:title" content="Lua Brilhante (Valsa Em 3 Cores)">
+    <meta name="twitter:description" content="Lua Brilhante (Valsa Em 3 Cores)">
+    <meta name="twitter:image" content="https://brucardosocoder.github.io/luabrilhante/lua_brilhante_header_background.png">
+    <link rel="icon" href="luabrilhante-16x16.ico" type="image/x-icon">
+    <link rel="icon" href="luabrilhante-32x32.ico" type="image/x-icon">
+    <title>Lua Brilhante (Valsa Em 3 Cores)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lua Brilhante (Valsa Em 3 Cores)</h1>
+            <h2>***Seção A</h2>
+            <h3>Bru Cardoso</h3>
+            <div class="master-controls">
+                <button id="playAll" class="btn btn-primary">▶ Play All</button>
+                <button id="pauseAll" class="btn btn-secondary">⏸ Pause All</button>
+                <button id="stopAll" class="btn btn-danger">⏹ Stop All</button>
+                <div class="master-volume">
+                    <label for="masterVolume">Master Volume:</label>
+                    <input type="range" id="masterVolume" min="0" max="100" value="70" class="volume-slider">
+                    <span id="masterVolumeValue">70%</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="tracks-container">
+                <div class="track-header">
+                    <div class="track-name">Track</div>
+                    <div class="track-controls">Controls</div>
+                    <div class="track-volume">Volume</div>
+                    <div class="track-waveform">Waveform</div>
+                </div>
+                
+                <!-- Track Templates (will be populated by JS) -->
+                <!-- The file input will be removed as tracks are pre-loaded -->
+            </div>
+        </main>
+
+        <footer>
+            <div class="transport-controls">
+                <div class="timeline">
+                    <div class="playhead" id="playhead"></div>
+                    <canvas id="timeline-canvas"></canvas>
+                </div>
+                <div class="time-display">
+                    <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
