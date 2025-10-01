@@ -422,7 +422,7 @@ header h3 {
     display: flex;
     margin-left: auto;
     gap: 1rem;
-    padding: 5px 10px 5px 10px;
+    padding: 10px 10px 5px 10px;
     width: fit-content;
     right: 0;
     top: 0;
@@ -497,7 +497,7 @@ header h3 {
     display: flex;
     margin-left: auto;
     gap: 1rem;
-    padding: 5px 10px 5px 10px;
+    padding: 10px 10px 5px 10px;
     width: fit-content;
     right: 0;
     top: 0;
@@ -637,7 +637,7 @@ header h3 {
     display: flex;
     margin-left: auto;
     gap: 1rem;
-    padding: 5px 5px 5px 10px;
+    padding: 10px 5px 5px 10px;
     width: fit-content;
     right: 0;
     top: 0;
@@ -769,7 +769,7 @@ header {
     display: flex;
     margin-left: auto;
     gap: 1rem;
-    padding: 40px 0px 5px 10px;
+    padding: 10px 0px 5px 10px;
     width: fit-content;
     right: 0;
     top: 0;
