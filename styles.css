@@ -147,6 +147,7 @@ header {
     overflow-y: auto;
     overflow-x: hidden;
     position: relative; /* Adicionar posicionamento relativo para o playhead */
+    padding-bottom: 50px;
 }
 
 /* Combined Track Row */
@@ -771,8 +772,8 @@ footer {
 
     .transport-controls {
         flex-direction: column; /* Empilha os controles do footer */
-        padding: 3px;
-        gap: 0px;
+        padding: 8px;
+        gap: 4px;
     }
 
     .transport-left,
