@@ -557,6 +557,21 @@ header {
     cursor: pointer;
 }
 
+.brucardoso {
+    text-align: center;
+    font-size: 14px;
+    padding: 2px;
+    text-decoration: none;
+}
+
+.brucardoso a {
+    display: inline; /* Inline no desktop */
+}
+
+.underline {
+   color: #00d4ff;;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .track-controls-section {
@@ -756,8 +771,8 @@ footer {
 
     .transport-controls {
         flex-direction: column; /* Empilha os controles do footer */
-        padding: 8px;
-        gap: 2px;
+        padding: 3px;
+        gap: 0px;
     }
 
     .transport-left,
@@ -803,5 +818,14 @@ footer {
         justify-content: center;
         padding: 5px 10px;
         margin-top: 10px;
+    }    
+
+    .brucardoso {
+        font-size: 9px;
     }
+
+    .brucardoso a {
+        display: block; /* Quebra linha no mobile */
+    }
+
 }
