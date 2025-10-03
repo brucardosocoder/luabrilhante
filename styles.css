@@ -563,6 +563,8 @@ header {
     font-size: 14px;
     padding: 2px;
     text-decoration: none;
+    
+    background: rgba(0, 0, 0, 0.6);
 }
 
 .brucardoso a {
@@ -772,8 +774,8 @@ footer {
 
     .transport-controls {
         flex-direction: column; /* Empilha os controles do footer */
-        padding: 8px;
-        gap: 4px;
+        padding: 12px;
+        gap: 8px;
     }
 
     .transport-left,
