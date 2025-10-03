@@ -1,3 +1,4 @@
+
 class WebDAW {
     constructor() {
         this.audioContext = null;
@@ -9,26 +10,39 @@ class WebDAW {
         this.currentTime = 0;
         this.duration = 0;
         this.soloedTracks = new Set();
-        this.audioFiles = [
-            'audio/Violino 1.mp3',
-            'audio/Violino 2.mp3',
-            'audio/Violino 3.mp3',
-            'audio/Clarinete.mp3',
-            'audio/Cello.mp3',
-            'audio/Piano.mp3',
-            'audio/Guitarra.mp3',
-            'audio/Baixo.mp3',
-            'audio/Bateria.mp3',
-            //'audio/track10.mp3',
-            //'audio/track11.mp3',
-            //'audio/track12.mp3'
+        this.selectedTrack = null;
+        this.playbackRate = 1;
+        this.isMasterMuted = false;
+        this.masterVolume = 0.7;
+        this.isLooping = false; // Novo estado para o loop
+        
+        // Track configurations
+        this.trackConfigs = [
+            { name: 'Violino 1', file: 'audio/Violino 1.mp3', color: '#ff6b6b' },
+            { name: 'Violino 2', file: 'audio/Violino 2.mp3', color: '#4ecdc4' },
+            { name: 'Violino 3', file: 'audio/Violino 3.mp3', color: '#45b7d1' },
+            { name: 'Clarinete', file: 'audio/Clarinete.mp3', color: '#96ceb4' },
+            { name: 'Cello', file: 'audio/Cello.mp3', color: '#feca57' },
+            { name: 'Piano', file: 'audio/Piano.mp3', color: '#ff9ff3' },
+            { name: 'Guitarra', file: 'audio/Guitarra.mp3', color: '#54a0ff' },
+            { name: 'Baixo', file: 'audio/Baixo.mp3', color: '#5f27cd' },
+            { name: 'Bateria', file: 'audio/Bateria.mp3', color: '#00d2d3' },
+            //{ name: 'Percussion', file: 'audio/track10.wav', color: '#ff9f43' },
+            //{ name: 'Synth', file: 'audio/track11.wav', color: '#ee5a24' },
+            //{ name: 'Other', file: 'audio/track12.wav', color: '#0abde3' }
         ];
         
-        this.initializeAudioContext();
+        this.init();
+    }
+    
+    async init() {
+        console.log('Initializing WebDAW...');
+        await this.initializeAudioContext();
         this.createTrackElements();
         this.setupEventListeners();
-        this.setupTimelineUpdate();
-        this.loadAllAudioFiles();
+        await this.loadAllAudioFiles();
+        this.drawAllWaveforms();
+        console.log('WebDAW initialization complete');
     }
 
     async initializeAudioContext() {
@@ -36,7 +50,7 @@ class WebDAW {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.masterGainNode = this.audioContext.createGain();
             this.masterGainNode.connect(this.audioContext.destination);
-            this.masterGainNode.gain.value = 0.7; // 70% volume
+            this.masterGainNode.gain.value = this.masterVolume;
             
             console.log("Audio Context initialized successfully");
         } catch (error) {
@@ -46,465 +60,690 @@ class WebDAW {
     }
 
     createTrackElements() {
-        const tracksContainer = document.querySelector(".tracks-container");
-        this.audioFiles.forEach((filePath, index) => {
+        const tracksContainer = document.getElementById('tracksContainer');
+        
+        this.trackConfigs.forEach((config, index) => {
             const trackNumber = index + 1;
-            const trackName = filePath.split('/').pop().split('.')[0]; // Extract name from path
-            const trackElement = document.createElement("div");
-            trackElement.classList.add("track");
-            trackElement.dataset.track = trackNumber;
-            trackElement.innerHTML = `
-                <div class="track-info">
-                    <h3>${trackName.replace("track", "Trilha ")}</h3>
-                    <div class="track-status">Loading...</div>
+            
+            // Create combined track row
+            const trackRow = document.createElement('div');
+            trackRow.className = 'track-row';
+            trackRow.dataset.track = trackNumber;
+            trackRow.innerHTML = `
+                <div class="track-controls-section">
+                    <div class="track-header">
+                        <span class="track-name">${config.name}</span>
+                        <div class="track-controls">
+                            <button class="track-btn mute-btn" data-track="${trackNumber}" data-action="mute">M</button>
+                            <button class="track-btn solo-btn" data-track="${trackNumber}" data-action="solo">S</button>
+                        </div>
+                    </div>
+                    <div class="track-sliders">
+                        <div class="slider-group">
+                            <span class="slider-label">Vol</span>
+                            <input type="range" class="track-slider volume-slider" 
+                                   data-track="${trackNumber}" data-control="volume"
+                                   min="0" max="100" value="70">
+                            <span class="slider-value">70%</span>
+                        </div>
+                        <div class="slider-group">
+                            <span class="slider-label">Pan</span>
+                            <input type="range" class="track-slider pan-slider" 
+                                   data-track="${trackNumber}" data-control="pan"
+                                   min="-100" max="100" value="0">
+                            <span class="slider-value">C</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="track-controls">
-                    <button class="btn-mute" data-track="${trackNumber}">M</button>
-                    <button class="btn-solo" data-track="${trackNumber}">S</button>
-                    <button class="btn-play" data-track="${trackNumber}">▶</button>
-                </div>
-                <div class="track-volume-control">
-                    <input type="range" class="volume-slider" min="0" max="100" value="70" data-track="${trackNumber}">
-                    <span class="volume-value">70%</span>
-                </div>
-                <div class="waveform-container">
-                    <canvas class="waveform" data-track="${trackNumber}"></canvas>
+                <div class="waveform-section">
+                    <canvas class="waveform-canvas" data-track="${trackNumber}"></canvas>
+                    <div class="track-playhead" data-track="${trackNumber}"></div>
                 </div>
             `;
-            tracksContainer.appendChild(trackElement);
+            
+            tracksContainer.appendChild(trackRow);
+            
+            // Initialize track data
+            this.tracks.set(trackNumber, {
+                name: config.name,
+                file: config.file,
+                color: config.color,
+                audioBuffer: null,
+                source: null,
+                gainNode: null,
+                panNode: null,
+                isPlaying: false,
+                isMuted: false,
+                isSolo: false,
+                volume: 0.7,
+                pan: 0,
+                element: trackRow,
+                canvas: trackRow.querySelector('.waveform-canvas')
+            });
+            
+            // Add event listeners
+            this.addTrackEventListeners(trackNumber);
         });
     }
 
-    setupEventListeners() {
-        // Master controls
-        document.getElementById("playAll").addEventListener("click", () => this.playAll());
-        document.getElementById("pauseAll").addEventListener("click", () => this.pauseAll());
-        document.getElementById("stopAll").addEventListener("click", () => this.stopAll());
+    addTrackEventListeners(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        const element = track.element;
         
-        // Master volume
-        const masterVolumeSlider = document.getElementById("masterVolume");
-        const masterVolumeValue = document.getElementById("masterVolumeValue");
+        // Mute button
+        const muteBtn = element.querySelector('.mute-btn');
+        muteBtn.addEventListener('click', () => this.toggleMute(trackNumber));
         
-        masterVolumeSlider.addEventListener("input", (e) => {
-            const volume = e.target.value / 100;
-            this.masterGainNode.gain.value = volume;
-            masterVolumeValue.textContent = e.target.value + "%";
+        // Solo button
+        const soloBtn = element.querySelector('.solo-btn');
+        soloBtn.addEventListener('click', () => this.toggleSolo(trackNumber));
+        
+        // Volume slider
+        const volumeSlider = element.querySelector('.volume-slider');
+        volumeSlider.addEventListener('input', (e) => {
+            this.setTrackVolume(trackNumber, e.target.value / 100);
+            element.querySelector('.volume-slider + .slider-value').textContent = e.target.value + '%';
         });
-
-        // Timeline seek functionality
-        const timeline = document.querySelector(".timeline");
-        timeline.addEventListener("click", (e) => {
-            this.seekToPosition(e);
+        
+        // Pan slider
+        const panSlider = element.querySelector('.pan-slider');
+        panSlider.addEventListener('input', (e) => {
+            this.setTrackPan(trackNumber, e.target.value / 100);
+            const value = parseInt(e.target.value);
+            const display = value === 0 ? 'C' : (value > 0 ? `R${value}` : `L${Math.abs(value)}`);
+            element.querySelector('.pan-slider + .slider-value').textContent = display;
         });
-
-        // Track controls (delegated to document as elements are created dynamically)
-        document.addEventListener("click", (e) => {
-            if (e.target.classList.contains("btn-mute")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                this.toggleMute(trackNumber);
-            } else if (e.target.classList.contains("btn-solo")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                this.toggleSolo(trackNumber);
-            } else if (e.target.classList.contains("btn-play")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                this.toggleTrackPlay(trackNumber);
-            }
-        });
-
-        document.addEventListener("input", (e) => {
-            if (e.target.classList.contains("volume-slider") && e.target.closest(".track")) {
-                const trackNumber = parseInt(e.target.dataset.track);
-                const volume = e.target.value / 100;
-                this.setTrackVolume(trackNumber, volume);
-                
-                // Update volume display
-                const volumeValue = e.target.parentElement.querySelector(".volume-value");
-                volumeValue.textContent = e.target.value + "%";
-            }
+        
+        // Waveform click — CORREÇÃO: usar e.currentTarget
+        track.canvas.addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = x / rect.width;
+            this.seekTo(percentage * this.duration);
         });
     }
 
     async loadAllAudioFiles() {
-        const loadPromises = this.audioFiles.map(async (filePath, index) => {
-            const trackNumber = index + 1;
-            const trackName = filePath.split('/').pop().split('.')[0];
-            this.updateTrackStatus(trackNumber, `Loading ${trackName}...`);
-            try {
-                const response = await fetch(filePath);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+        console.log('Loading audio files...');
+        const loadPromises = [];
+        
+        for (const [trackNumber, track] of this.tracks) {
+            loadPromises.push(this.loadAudioFile(trackNumber));
+        }
+        
+        await Promise.all(loadPromises);
+        this.calculateDuration();
+        console.log('All audio files loaded');
+    }
+
+    async loadAudioFile(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        
+        try {
+            console.log(`Loading ${track.file}...`);
+            const response = await fetch(track.file);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+            
+            track.audioBuffer = audioBuffer;
+            
+            // Create audio nodes
+            track.gainNode = this.audioContext.createGain();
+            track.panNode = this.audioContext.createStereoPanner();
+            
+            track.gainNode.connect(track.panNode);
+            track.panNode.connect(this.masterGainNode);
+            
+            track.gainNode.gain.value = track.volume;
+            track.panNode.pan.value = track.pan;
+            
+            console.log(`Loaded ${track.name} successfully`);
+        } catch (error) {
+            console.error(`Failed to load ${track.file}:`, error);
+        }
+    }
+
+    calculateDuration() {
+        let maxDuration = 0;
+        for (const [trackNumber, track] of this.tracks) {
+            if (track.audioBuffer) {
+                maxDuration = Math.max(maxDuration, track.audioBuffer.duration);
+            }
+        }
+        this.duration = maxDuration;
+        document.getElementById('totalTime').textContent = this.formatTime(this.duration);
+    }
+
+    drawAllWaveforms() {
+        console.log('Drawing waveforms...');
+        for (const [trackNumber, track] of this.tracks) {
+            if (track.audioBuffer) {
+                this.drawWaveform(trackNumber);
+            }
+        }
+    }
+
+    drawWaveform(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        const canvas = track.canvas;
+        
+        if (!track.audioBuffer || !canvas) {
+            console.log(`Cannot draw waveform for track ${trackNumber}: missing audioBuffer or canvas`);
+            return;
+        }
+        
+        // Wait for canvas to be ready
+        setTimeout(() => {
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) {
+                console.log(`Canvas not ready for track ${trackNumber}, retrying...`);
+                setTimeout(() => this.drawWaveform(trackNumber), 100);
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            const width = rect.width;
+            const height = rect.height;
+            
+            const audioData = track.audioBuffer.getChannelData(0);
+            const step = Math.ceil(audioData.length / width);
+            const amp = height / 2;
+            
+            // Clear canvas
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw waveform
+            ctx.strokeStyle = track.color;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            
+            for (let i = 0; i < width; i++) {
+                let min = 1.0;
+                let max = -1.0;
                 
-                const track = {
-                    buffer: audioBuffer,
-                    source: null,
-                    gainNode: this.audioContext.createGain(),
-                    isMuted: false,
-                    isSolo: false,
-                    isPlaying: false,
-                    volume: 0.7,
-                    fileName: trackName
-                };
-
-                track.gainNode.connect(this.masterGainNode);
-                track.gainNode.gain.value = track.volume;
-
-                this.tracks.set(trackNumber, track);
-
-                this.updateTrackStatus(trackNumber, `Loaded: ${trackName}`);
-                this.drawWaveform(trackNumber, audioBuffer);
-                
-                if (audioBuffer.duration > this.duration) {
-                    this.duration = audioBuffer.duration;
-                    this.updateTimeDisplay();
+                for (let j = 0; j < step; j++) {
+                    const datum = audioData[(i * step) + j];
+                    if (datum < min) min = datum;
+                    if (datum > max) max = datum;
                 }
-                console.log(`Track ${trackNumber} loaded: ${trackName}`);
-            } catch (error) {
-                console.error(`Error loading audio file for track ${trackNumber} (${filePath}):`, error);
-                this.updateTrackStatus(trackNumber, `Error loading ${trackName}`);
+                
+                const y1 = (1 + min) * amp;
+                const y2 = (1 + max) * amp;
+                
+                ctx.moveTo(i, y1);
+                ctx.lineTo(i, y2);
+            }
+            
+            ctx.stroke();
+            console.log(`Waveform drawn for ${track.name}`);
+        }, 50);
+    }
+
+    setupEventListeners() {
+        // Play/Pause button
+        document.getElementById('playBtn').addEventListener('click', () => {
+            this.togglePlayback();
+        });
+        
+        // Master volume
+        const masterVolumeSlider = document.getElementById('masterVolumeSlider');
+        masterVolumeSlider.addEventListener('input', (e) => {
+            this.setMasterVolume(e.target.value / 100);
+            document.getElementById('masterVolumeValue').textContent = e.target.value + '%';
+        });
+        
+        // Master volume button click to toggle mute only
+        const volumeBtn = document.getElementById('volumeBtn');
+        const masterVolumeControl = document.querySelector('.master-volume-control');
+        
+        volumeBtn.addEventListener('click', () => {
+            // Toggle mute/unmute only
+            this.toggleMasterMute();
+        });
+        
+        // Master volume button hover to show/hide volume slider
+        volumeBtn.addEventListener('mouseenter', () => {
+            masterVolumeControl.style.display = 'flex';
+            masterVolumeControl.classList.add('active');
+        });
+        
+        // Create a virtual container that includes both the button and the slider
+        const hideVolumeSlider = () => {
+            masterVolumeControl.style.display = 'none';
+            masterVolumeControl.classList.remove('active');
+        };
+        
+        volumeBtn.addEventListener('mouseleave', (e) => {
+            // Delay hiding to allow mouse to move to slider
+            setTimeout(() => {
+                if (!masterVolumeControl.matches(':hover') && !volumeBtn.matches(':hover')) {
+                    hideVolumeSlider();
+                }
+            }, 100);
+        });
+        
+        masterVolumeControl.addEventListener('mouseleave', (e) => {
+            // Delay hiding to allow mouse to move back to button
+            setTimeout(() => {
+                if (!masterVolumeControl.matches(':hover') && !volumeBtn.matches(':hover')) {
+                    hideVolumeSlider();
+                }
+            }, 100);
+        });
+        
+        // Speed controls
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const speed = parseFloat(e.target.textContent);
+                this.setPlaybackRate(speed);
+                
+                // Update active state
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+        
+        // Reset button
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            this.reset();
+        });
+        
+        // Progress bar — CORREÇÃO: usar e.currentTarget
+        document.getElementById('progressBar').addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = x / rect.width;
+            this.seekTo(percentage * this.duration);
+        });
+
+        // Retroceder 10s
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            this.seekTo(this.currentTime - 10);
+        });
+
+        // Avançar 10s
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            this.seekTo(this.currentTime + 10);
+        });
+
+        // Loop button
+        document.getElementById('loopBtn').addEventListener('click', () => {
+            this.toggleLoop();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault(); // Prevent default spacebar action (e.g., scrolling)
+                this.togglePlayback();
+            } else if (e.code === 'ArrowLeft') {
+                this.seekTo(this.currentTime - 10);
+            } else if (e.code === 'ArrowRight') {
+                this.seekTo(this.currentTime + 10);
+            } else if (e.code === 'KeyR') {
+                this.reset();
             }
         });
-        await Promise.all(loadPromises);
-        this.updateTrackStatus(0, "All tracks loaded. Ready to play!"); // Update a general status if needed
     }
 
-    updateTrackStatus(trackNumber, status) {
-        let statusElement;
-        if (trackNumber === 0) { // For a general status message
-            // You might want a dedicated element for general status, e.g., in the header
-            // For now, let's just log it.
-            console.log(status);
+    togglePlayback() {
+        if (this.isPlaying) {
+            this.pause();
         } else {
-            statusElement = document.querySelector(`.track[data-track="${trackNumber}"] .track-status`);
-            if (statusElement) {
-                statusElement.textContent = status;
-            }
+            this.play();
         }
     }
 
-    drawWaveform(trackNumber, audioBuffer) {
-        const canvas = document.querySelector(`.waveform[data-track="${trackNumber}"]`);
-        if (!canvas) return;
-
-        const ctx = canvas.getContext("2d");
-        const width = canvas.width = canvas.offsetWidth;
-        const height = canvas.height = canvas.offsetHeight;
-
-        const data = audioBuffer.getChannelData(0);
-        const step = Math.ceil(data.length / width);
-        const amp = height / 2;
-
-        ctx.fillStyle = "rgba(78, 205, 196, 0.3)";
-        ctx.strokeStyle = "#4ecdc4";
-        ctx.lineWidth = 1;
-
-        ctx.beginPath();
-        for (let i = 0; i < width; i++) {
-            let min = 1.0;
-            let max = -1.0;
-            
-            for (let j = 0; j < step; j++) {
-                const datum = data[(i * step) + j];
-                if (datum < min) min = datum;
-                if (datum > max) max = datum;
-            }
-            
-            const x = i;
-            const yMin = (1 + min) * amp;
-            const yMax = (1 + max) * amp;
-            
-            ctx.fillRect(x, yMin, 1, yMax - yMin);
-        }
-    }
-
-    async playAll() {
-        if (this.audioContext.state === "suspended") {
+    async play() {
+        if (this.audioContext.state === 'suspended') {
             await this.audioContext.resume();
         }
-
+        
         this.isPlaying = true;
         this.startTime = this.audioContext.currentTime - this.pauseTime;
-
+        
+        // Start all tracks
         for (const [trackNumber, track] of this.tracks) {
-            if (!track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
-                await this.playTrack(trackNumber);
+            if (track.audioBuffer && !track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
+                this.startTrack(trackNumber, this.pauseTime);
             }
         }
-
-        this.updatePlayButtonStates();
+        
+        // Update UI
+        const playBtn = document.getElementById('playBtn');
+        playBtn.textContent = '⏸';
+        playBtn.classList.add('playing');
+        
+        this.updateProgress();
+        console.log('Playback started');
     }
 
-    pauseAll() {
+    pause() {
         this.isPlaying = false;
-        this.pauseTime = this.currentTime;
-
+        this.pauseTime = this.audioContext.currentTime - this.startTime;
+        
+        // Stop all tracks
         for (const [trackNumber, track] of this.tracks) {
             this.stopTrack(trackNumber);
         }
-
-        this.updatePlayButtonStates();
+        
+        // Update UI
+        const playBtn = document.getElementById('playBtn');
+        playBtn.textContent = '▶';
+        playBtn.classList.remove('playing');
+        
+        console.log('Playback paused');
     }
 
-    stopAll() {
-        this.isPlaying = false;
-        this.pauseTime = 0;
-        this.currentTime = 0;
-
-        for (const [trackNumber, track] of this.tracks) {
-            this.stopTrack(trackNumber);
-        }
-
-        this.updatePlayButtonStates();
-        this.updateTimeDisplay();
-        this.updatePlayhead();
-    }
-
-    async playTrack(trackNumber) {
+    startTrack(trackNumber, offset = 0) {
         const track = this.tracks.get(trackNumber);
-        if (!track || !track.buffer) return;
-
-        // Stop existing source if playing
+        
         if (track.source) {
             track.source.stop();
+            track.source.disconnect();
+            track.source = null;
         }
 
-        // Create new source
         track.source = this.audioContext.createBufferSource();
-        track.source.buffer = track.buffer;
+        track.source.buffer = track.audioBuffer;
         track.source.connect(track.gainNode);
-
-        // Start playback from current position
-        const offset = this.pauseTime || 0;
+        track.source.playbackRate.value = this.playbackRate; // Apply current playback rate
         track.source.start(0, offset);
         track.isPlaying = true;
-
-        // Handle track end
+        
+        // Handle track ending
         track.source.onended = () => {
-            track.isPlaying = false;
-            this.updateTrackPlayButton(trackNumber);
-        };
+            if (!this.isPlaying || this.isSeeking) return; // Only process if global playback is active and not seeking
 
-        this.updateTrackPlayButton(trackNumber);
+            track.isPlaying = false;
+            const allTracksEnded = Array.from(this.tracks.values()).every(t => !t.isPlaying);
+
+            if (allTracksEnded) {
+                if (this.isLooping) {
+                    this.pauseTime = 0; // Reset for seamless loop
+                    this.play();
+                } else {
+                    this.pause();
+                    this.seekTo(0); // Reset to beginning if not looping
+                }
+            }
+        };
+    }
+
+    seekTo(time) {
+        // Ensure time is within bounds
+        time = Math.max(0, Math.min(time, this.duration));
+
+        const wasPlaying = this.isPlaying;
+
+        // Update pauseTime and currentTime to the new seek position
+        this.pauseTime = time;
+        this.currentTime = time;
+
+        // Update UI immediately
+        const percentage = (time / this.duration) * 100;
+        document.getElementById("progressFill").style.width = percentage + "%";
+        document.getElementById("currentTime").textContent = this.formatTime(time);
+        
+        // Update all track playheads
+        for (const [trackNumber, track] of this.tracks) {
+            this.updateTrackPlayhead(trackNumber);
+        }
+
+        // If it was playing, stop all current sources and restart them from the new position
+        if (wasPlaying) {
+            // Set a flag to indicate seeking, so onended events don't trigger unwanted actions
+            this.isSeeking = true;
+            // Stop all current sources
+            for (const [trackNumber, track] of this.tracks) {
+                if (track.source) {
+                    this.stopTrack(trackNumber);
+                }
+            }
+            // Recalculate startTime based on the new pauseTime
+            this.startTime = this.audioContext.currentTime - this.pauseTime;
+            // Restart only the tracks that should be playing
+            for (const [trackNumber, track] of this.tracks) {
+                if (track.audioBuffer && !track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
+                    this.startTrack(trackNumber, this.pauseTime);
+                }
+            }
+            // Reset the seeking flag immediately after starting new sources
+            // The onended handler should be robust enough to handle this.
+            // The isSeeking flag is reset after all tracks have been restarted.
+            // This ensures that the onended event for the *old* sources doesn\'t trigger a full stop/reset.
+            // The onended event for the *new* sources will only fire when they actually finish playing.
+            // Add a small delay before resetting isSeeking to ensure all new sources have properly started.
+            setTimeout(() => {
+                this.isSeeking = false;
+            }, 50); // 50ms delay should be sufficient
+        }
+        
+        console.log(`Seeked to ${this.formatTime(time)}`);
+    }
+
+    updateProgress() {
+        if (this.isPlaying) {
+            this.currentTime = this.audioContext.currentTime - this.startTime;
+
+            if (this.currentTime >= this.duration) {
+                // All tracks have ended, handle loop or stop
+                if (this.isLooping) {
+                    this.pauseTime = 0; // Reset for seamless loop
+                    this.play();
+                } else {
+                    this.pause();
+                    this.seekTo(0); // Reset to beginning if not looping
+                }
+                return;
+            }
+
+            const percentage = (this.currentTime / this.duration) * 100;
+            document.getElementById("progressFill").style.width = percentage + "%";
+            document.getElementById("currentTime").textContent = this.formatTime(this.currentTime);
+            
+            // Update all track playheads
+            for (const [trackNumber, track] of this.tracks) {
+                this.updateTrackPlayhead(trackNumber);
+            }
+            
+            requestAnimationFrame(() => this.updateProgress());
+        }
     }
 
     stopTrack(trackNumber) {
         const track = this.tracks.get(trackNumber);
-        if (!track || !track.source) return;
-
-        track.source.stop();
-        track.source = null;
-        track.isPlaying = false;
-        this.updateTrackPlayButton(trackNumber);
+        if (track.source) {
+            try {
+                track.source.stop();
+            } catch (e) {
+                // Ignore errors if source was already stopped
+            }
+            track.source = null;
+            track.isPlaying = false;
+        }
     }
 
-    async toggleTrackPlay(trackNumber) {
+    updateTrackPlayhead(trackNumber) {
         const track = this.tracks.get(trackNumber);
-        if (!track) return;
+        const playhead = track.element.querySelector(".track-playhead");
+        
+        if (playhead && this.duration > 0) {
+            const percentage = (this.currentTime / this.duration) * 100;
 
-        if (track.isPlaying) {
-            this.stopTrack(trackNumber);
+            playhead.style.left = percentage + '%';
+        }
+    }
+
+    setMasterVolume(volume) {
+        this.masterVolume = volume;
+        if (!this.isMasterMuted) {
+            this.masterGainNode.gain.value = volume;
+        }
+    }
+
+    toggleMasterMute() {
+        this.isMasterMuted = !this.isMasterMuted;
+        
+        if (this.isMasterMuted) {
+            this.masterGainNode.gain.value = 0;
+            document.getElementById('volumeBtn').textContent = '🔇';
         } else {
-            await this.playTrack(trackNumber);
+            this.masterGainNode.gain.value = this.masterVolume;
+            document.getElementById('volumeBtn').textContent = '🔊';
+        }
+        
+        console.log(`Master ${this.isMasterMuted ? 'muted' : 'unmuted'}`);
+    }
+
+    setTrackVolume(trackNumber, volume) {
+        const track = this.tracks.get(trackNumber);
+        track.volume = volume;
+        
+        if (track.gainNode && !track.isMuted) {
+            track.gainNode.gain.value = volume;
+        }
+    }
+
+    setTrackPan(trackNumber, pan) {
+        const track = this.tracks.get(trackNumber);
+        track.pan = pan;
+        
+        if (track.panNode) {
+            track.panNode.pan.value = pan;
         }
     }
 
     toggleMute(trackNumber) {
         const track = this.tracks.get(trackNumber);
-        if (!track) return;
-
         track.isMuted = !track.isMuted;
-        track.gainNode.gain.value = track.isMuted ? 0 : track.volume;
-
-        // Update UI
-        const muteBtn = document.querySelector(`.btn-mute[data-track="${trackNumber}"]`);
-        const trackElement = document.querySelector(`.track[data-track="${trackNumber}"]`);
         
-        if (track.isMuted) {
-            muteBtn.classList.add("active");
-            trackElement.classList.add("muted");
-        } else {
-            muteBtn.classList.remove("active");
-            trackElement.classList.remove("muted");
+        if (track.gainNode) {
+            track.gainNode.gain.value = track.isMuted ? 0 : track.volume;
         }
+
+        // If playing, update track's gain node directly without stopping/restarting
+        if (this.isPlaying && track.gainNode) {
+            track.gainNode.gain.value = track.isMuted ? 0 : track.volume;
+        }
+        
+        // Update UI
+        const muteBtn = track.element.querySelector('.mute-btn');
+        muteBtn.classList.toggle('active', track.isMuted);
+        
+        console.log(`Track ${trackNumber} ${track.isMuted ? 'muted' : 'unmuted'}`);
     }
 
     toggleSolo(trackNumber) {
         const track = this.tracks.get(trackNumber);
-        if (!track) return;
-
-        track.isSolo = !track.isSolo;
         
         if (track.isSolo) {
-            this.soloedTracks.add(trackNumber);
-        } else {
+            // Remove from solo
+            track.isSolo = false;
             this.soloedTracks.delete(trackNumber);
-        }
-
-        // Update all tracks based on solo state
-        for (const [num, t] of this.tracks) {
-            const soloBtn = document.querySelector(`.btn-solo[data-track="${num}"]`);
-            const trackElement = document.querySelector(`.track[data-track="${num}"]`);
-            
-            if (t.isSolo) {
-                soloBtn.classList.add("active");
-                trackElement.classList.add("solo");
-            } else {
-                soloBtn.classList.remove("active");
-                trackElement.classList.remove("solo");
-            }
-
-            // Adjust volume based on solo state
-            if (this.soloedTracks.size > 0) {
-                t.gainNode.gain.value = (t.isSolo && !t.isMuted) ? t.volume : 0;
-            } else {
-                t.gainNode.gain.value = t.isMuted ? 0 : t.volume;
-            }
-        }
-    }
-
-    setTrackVolume(trackNumber, volume) {
-        const track = this.tracks.get(trackNumber);
-        if (!track) return;
-
-        track.volume = volume;
-        if (!track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
-            track.gainNode.gain.value = volume;
-        }
-    }
-
-    updatePlayButtonStates() {
-        const playAllBtn = document.getElementById("playAll");
-        
-        if (this.isPlaying) {
-            playAllBtn.textContent = "⏸ Pause All";
-            playAllBtn.className = "btn btn-secondary";
         } else {
-            playAllBtn.textContent = "▶ Play All";
-            playAllBtn.className = "btn btn-primary";
-        }
-    }
-
-    updateTrackPlayButton(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        const playBtn = document.querySelector(`.btn-play[data-track="${trackNumber}"]`);
-        const trackElement = document.querySelector(`.track[data-track="${trackNumber}"]`);
-        
-        if (!track || !playBtn) return;
-
-        if (track.isPlaying) {
-            playBtn.textContent = "⏸";
-            playBtn.classList.add("playing");
-            trackElement.classList.add("playing");
-        } else {
-            playBtn.textContent = "▶";
-            playBtn.classList.remove("playing");
-            trackElement.classList.remove("playing");
-        }
-    }
-
-    setupTimelineUpdate() {
-        const updateTimeline = () => {
-            if (this.isPlaying && this.audioContext) {
-                this.currentTime = this.audioContext.currentTime - this.startTime;
-                
-                if (this.currentTime >= this.duration) {
-                    this.stopAll();
-                    return;
-                }
-                
-                this.updateTimeDisplay();
-                this.updatePlayhead();
-            }
-            
-            requestAnimationFrame(updateTimeline);
-        };
-        
-        updateTimeline();
-    }
-
-    updateTimeDisplay() {
-        const currentTimeElement = document.getElementById("currentTime");
-        const totalTimeElement = document.getElementById("totalTime");
-        
-        if (currentTimeElement) {
-            currentTimeElement.textContent = this.formatTime(this.currentTime);
-        }
-        
-        if (totalTimeElement) {
-            totalTimeElement.textContent = this.formatTime(this.duration);
-        }
-    }
-
-    updatePlayhead() {
-        const playhead = document.getElementById("playhead");
-        const timeline = document.querySelector(".timeline");
-        
-        if (playhead && timeline && this.duration > 0) {
-            const percentage = (this.currentTime / this.duration) * 100;
-            playhead.style.left = `${Math.min(percentage, 100)}%`;
-        }
-    }
-
-    seekToPosition(event) {
-        if (this.duration === 0) return; // No audio loaded
-        
-        const timeline = event.currentTarget;
-        const rect = timeline.getBoundingClientRect();
-        const clickX = event.clientX - rect.left;
-        const timelineWidth = rect.width;
-        
-        // Calculate the percentage of the timeline clicked
-        const percentage = Math.max(0, Math.min(1, clickX / timelineWidth));
-        const seekTime = percentage * this.duration;
-        
-        // Update current time and pause time
-        this.pauseTime = seekTime;
-        this.currentTime = seekTime;
-        
-        // If currently playing, restart all tracks from the new position
-        if (this.isPlaying) {
-            this.stopAllTracks();
-            this.startTime = this.audioContext.currentTime - seekTime;
-            
-            // Restart playing tracks from new position
-            for (const [trackNumber, track] of this.tracks) {
-                if (!track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
-                    this.playTrack(trackNumber);
-                }
-            }
+            // Add to solo
+            track.isSolo = true;
+            this.soloedTracks.add(trackNumber);
         }
         
         // Update UI
-        this.updateTimeDisplay();
-        this.updatePlayhead();
+        const soloBtn = track.element.querySelector('.solo-btn');
+        soloBtn.classList.toggle('active', track.isSolo);
         
-        console.log(`Seeked to: ${this.formatTime(seekTime)} (${(percentage * 100).toFixed(1)}%)`);
+        // Update gain nodes based on solo state without stopping/restarting tracks
+        if (this.isPlaying) {
+            for (const [tNum, t] of this.tracks) {
+                if (t.gainNode) {
+                    const shouldPlay = !t.isMuted && (this.soloedTracks.size === 0 || t.isSolo);
+                    t.gainNode.gain.value = shouldPlay ? t.volume : 0;
+                }
+            }
+        }
+        
+        console.log(`Track ${trackNumber} solo ${track.isSolo ? 'enabled' : 'disabled'}`);
     }
 
-    stopAllTracks() {
+    setPlaybackRate(rate) {
+        this.playbackRate = rate;
+        
+        // Update all playing tracks
         for (const [trackNumber, track] of this.tracks) {
-            if (track.source) {
-                track.source.stop();
-                track.source = null;
-                track.isPlaying = false;
+            if (track.source && track.isPlaying) {
+                track.source.playbackRate.value = rate;
             }
+        }
+        
+        console.log(`Playback rate set to ${rate}x`);
+    }
+
+    toggleLoop() {
+        this.isLooping = !this.isLooping;
+        
+        // Update UI
+        const loopBtn = document.getElementById('loopBtn');
+        loopBtn.classList.toggle('active', this.isLooping);
+        
+        console.log(`Loop ${this.isLooping ? 'enabled' : 'disabled'}`);
+    }
+
+    reset() {
+        console.log("Resetting track controls");
+        for (const [trackNumber, track] of this.tracks) {
+            // Reset mute
+            if (track.isMuted) {
+                this.toggleMute(trackNumber);
+            }
+            // Reset solo
+            if (track.isSolo) {
+                this.toggleSolo(trackNumber);
+            }
+            // Reset volume to default (0.7)
+            this.setTrackVolume(trackNumber, 0.7);
+            track.element.querySelector(".volume-slider").value = 70;
+            track.element.querySelector(".volume-slider + .slider-value").textContent = "70%";
+            // Reset pan to default (0)
+            this.setTrackPan(trackNumber, 0);
+            track.element.querySelector(".pan-slider").value = 0;
+            track.element.querySelector(".pan-slider + .slider-value").textContent = "C";
+        }
+        // Ensure master volume is not muted and reset to default if needed
+        if (this.isMasterMuted) {
+            this.toggleMasterMute();
+        }
+        this.setMasterVolume(0.7);
+        document.getElementById("masterVolumeSlider").value = 70;
+        document.getElementById("masterVolumeValue").textContent = "70%";
+
+        // Reset playback rate to 1x
+        this.setPlaybackRate(1);
+        document.querySelectorAll(".speed-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(".speed-btn:nth-child(2)").classList.add("active"); // Assuming 1x is the second button
+
+        // Reset loop state
+        if (this.isLooping) {
+            this.toggleLoop();
         }
     }
 
     formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
+        const minutes = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
-        return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+        return `${minutes}:${secs.toString().padStart(2, '0')}`;
     }
 }
 
-// Initialize the DAW when the page loads
-document.addEventListener("DOMContentLoaded", () => {
+// Initialize the WebDAW when the page loads
+document.addEventListener('DOMContentLoaded', () => {
     window.webDAW = new WebDAW();
-    
-    // Handle browser audio context restrictions
-    document.addEventListener("click", async () => {
-        if (window.webDAW.audioContext && window.webDAW.audioContext.state === "suspended") {
-            await window.webDAW.audioContext.resume();
-        }
-    }, { once: true });
 });
+
+
+
