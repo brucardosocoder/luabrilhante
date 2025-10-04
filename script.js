@@ -1,165 +1,869 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:url" content="https://brucardosocoder.github.io/luabrilhante">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Lua Brilhante">
-    <meta property="og:description" content="Lua Brilhante">
-    <meta property="og:image" content="https://brucardosocoder.github.io/luabrilhante/Luabrilhanteog.png">   
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="https://brucardosocoder.github.io/luabrilhante">
-    <meta property="twitter:url" content="https://brucardosocoder.github.io/luabrilhante">
-    <meta name="twitter:title" content="Lua Brilhante (Valsa em 3 Cores)">
-    <meta name="twitter:description" content="Lua Brilhante">
-    <meta name="twitter:image" content="https://brucardosocoder.github.io/luabrilhante/Luabrilhanteog.png">
-    <link rel="icon" href="luabrilhante-16x16.ico" type="image/x-icon">
-    <link rel="icon" href="luabrilhante-32x32.ico" type="image/x-icon">
-    <title>Lua Brilhante</title>
-    <link rel="stylesheet" href="styles_final_corrected.css">
-</head>
-<body>
-    <div class="container">
-        <!-- Header do usuário -->
-        <header>
-            <div class="song-info">
-                    <h1>Seção A</h1>
-            </div>
-            <div class="header-center">
-                <div class="song-title">
-                    <h1>Lua Brilhante</h1>
-                    <span class="song-meta">Bru Cardoso</span>
-                </div>
-            </div>
-            <div class="header-right">
-                <a href="https://www.instagram.com/brucardoso.music" class="instagram-link" id="instagramLink" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" fill="currentColor"/>
-                    </svg>
-                </a>
-            </div>
-        </header>
-
-        <!-- Main Content do meu projeto (index_pdf.html) -->
-        <main class="main-content">
-            <div class="audio-player">
-                <div class="track-list">                    
-                </div>
-            </div>
-        </main>
-
-        <!-- Footer do usuário -->
-        <footer>
-            <div class="transport-controls">
-            <div class="transport-left">
-                <!-- Reset Button -->
-                <div class="reset-section">
-                    <button class="reset-btn" id="resetBtn">Reset</button>
-                </div>
-            </div>
-            
-            <div class="transport-center">
-                <div class="playback-controls">
-                    <button class="transport-btn volume-btn" id="volumeBtn">🔊</button>
-                    <button class="transport-btn prev-btn" id="prevBtn">⏮</button>
-                    <button class="transport-btn play-btn" id="playBtn">▶</button>
-                    <button class="transport-btn next-btn" id="nextBtn">⏭</button>
-                    <button class="transport-btn loop-btn" id="loopBtn">🔁</button>
-                </div>
-                <div class="master-volume-control" style="display: none;">
-                    <span class="volume-label">Master</span>
-                    <input type="range" class="master-volume-slider" id="masterVolumeSlider" 
-                           min="0" max="100" value="70">
-                    <span class="volume-value" id="masterVolumeValue">70%</span>
-                </div>
-                <div class="time-display">
-                    <span id="currentTime">0:00</span>
-                    <div class="progress-bar" id="progressBar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span id="totalTime">4:02</span>
-                </div>
-            </div>
-            
-            <div class="transport-right">
-                <!-- Speed Controls -->
-                <div class="speed-controls">
-                    <button class="speed-btn" data-speed="0.5">0.5x</button>
-                    <button class="speed-btn active" data-speed="1">1x</button>
-                    <button class="speed-btn" data-speed="2">2x</button>
-                </div>
-            </div>
-            </div>
-            <div class="brucardoso">
-    <p>&copy; 2025 Villa-Metal. Todos os direitos reservados. Desenvolvido por <a href="https://wa.me/5521989978029" target="_blank" class="underline">Bru Cardoso Coder.</a></p>
-</div>
-        </footer>
-
+class WebDAW {
+    constructor() {
+        this.audioContext = null;
+        this.tracks = new Map();
+        this.masterGainNode = null;
+        this.isPlaying = false;
+        this.startTime = 0;
+        this.pauseTime = 0;
+        this.currentTime = 0;
+        this.duration = 0;
+        this.soloedTracks = new Set();
+        this.selectedTrack = null;
+        this.playbackRate = 1;
+        this.isMasterMuted = false;
+        this.masterVolume = 0.7;
+        this.isLooping = false;
         
+        // Track configurations
+        this.trackConfigs = [
+            { name: 'Violino 1', file: 'audio/Violino 1.mp3', color: '#ff6b6b' },
+            { name: 'Violino 2', file: 'audio/Violino 2.mp3', color: '#4ecdc4' },
+            { name: 'Violino 3', file: 'audio/Violino 3.mp3', color: '#45b7d1' },
+            { name: 'Clarinete', file: 'audio/Clarinete.mp3', color: '#96ceb4' },
+            { name: 'Cello', file: 'audio/Cello.mp3', color: '#feca57' },
+            { name: 'Piano', file: 'audio/Piano.mp3', color: '#ff9ff3' },
+            { name: 'Guitarra', file: 'audio/Guitarra.mp3', color: '#54a0ff' },
+            { name: 'Baixo', file: 'audio/Baixo.mp3', color: '#5f27cd' },
+            { name: 'Bateria', file: 'audio/Bateria.mp3', color: '#00d2d3' }
+        ];
+        
+        this.init();
+    }
+    
+    async init() {
+        console.log('Initializing WebDAW...');
+        await this.initializeAudioContext();
+        this.createTrackElements();
+        this.setupEventListeners();
+        await this.loadAllAudioFiles();
+        this.drawAllWaveforms();
+        console.log('WebDAW initialization complete');
+    }
 
-    </div>
+    async initializeAudioContext() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.masterGainNode = this.audioContext.createGain();
+            this.masterGainNode.connect(this.audioContext.destination);
+            this.masterGainNode.gain.value = this.masterVolume;
+            
+            console.log("Audio Context initialized successfully");
+        } catch (error) {
+            console.error("Failed to initialize Audio Context:", error);
+            alert("Seu navegador não suporta Web Audio API. Por favor, use um navegador mais recente.");
+        }
+    }
 
-    <!-- Keyboard Shortcuts Help -->
-    <div class="shortcuts-help" id="shortcutsHelp" style="display: none;">
-        <div class="shortcuts-content">
-            <h3>Atalhos de Teclado</h3>
-            <ul>
-                <li><kbd>Espaço</kbd> - Play/Pause</li>
-                <li><kbd>←</kbd> - Retroceder 10s</li>
-                <li><kbd>→</kbd> - Avançar 10s</li>
-                <li><kbd>R</kbd> - Reset</li>
-                <li><kbd>M</kbd> - Mute/Unmute trilha selecionada</li>
-                <li><kbd>S</kbd> - Solo trilha selecionada</li>
-            </ul>
-            <button class="close-shortcuts" id="closeShortcuts">×</button>
-        </div>
-    </div>
-
-    <!-- Score Modal - Modificado para PDFs -->
-    <div class="score-modal" id="scoreModal" style="display: none;">
-        <div class="score-modal-content">
-            <div class="score-modal-header">
-                <h2 id="scoreModalTitle">Partitura</h2>
-                <div class="score-modal-controls">
-                    <button class="score-control-btn" id="scoreDownload" title="Baixar PDF">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7,10 12,15 17,10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                    </button>
-                    <button class="score-control-btn" id="scorePrint" title="Imprimir PDF">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6,9 6,2 18,2 18,9"></polyline>
-                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                            <rect x="6" y="14" width="12" height="8"></rect>
-                        </svg>
-                    </button>
-                    <button class="score-control-btn" id="scoreFullscreen" title="Tela Cheia">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-                        </svg>
-                    </button>
-                    <button class="score-close-btn" id="closeScoreModal" title="Fechar">×</button>
+    createTrackElements() {
+        const tracksContainer = document.querySelector('.track-list');
+        
+        this.trackConfigs.forEach((config, index) => {
+            const trackNumber = index + 1;
+            
+            // Create track item
+            const trackItem = document.createElement('div');
+            trackItem.className = 'track-item';
+            trackItem.dataset.track = trackNumber;
+            trackItem.innerHTML = `
+                <div class="track-info">
+                    <h3>${config.name}</h3>
+                    <div class="track-controls">
+                        <button class="score-btn" data-track="${trackNumber}" title="Ver Partitura"><img class="fit-picture" src="partitura.png"/></button>
+                        <button class="mute-btn" data-track="${trackNumber}" title="Mute">M</button>
+                        <button class="solo-btn" data-track="${trackNumber}" title="Solo">S</button>
+                    </div>
                 </div>
-            </div>
-            <div class="score-modal-body">
-                <iframe id="scoreModalPDF" src="" frameborder="0" style="width: 100%; height: 100%; display: none;"></iframe>
-                <div id="scoreModalError" class="score-error" style="display: none;">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M9 3v15a3 3 0 1 0 3 3V9l9-3V3l-9 3z"/>
-                        <circle cx="6" cy="18" r="3"/>
-                        <circle cx="18" cy="6" r="3"/>
-                    </svg>
-                    <p>Partitura não encontrada</p>
+                <div class="track-sliders">
+                    <div class="slider-group">
+                        <label>Vol</label>
+                        <input type="range" class="volume-slider" data-track="${trackNumber}" min="0" max="100" value="70">
+                        <span class="volume-value">70%</span>
+                    </div>
+                    <div class="slider-group">
+                        <label>Pan</label>
+                        <input type="range" class="pan-slider" data-track="${trackNumber}" min="-100" max="100" value="0">
+                        <span class="pan-value">C</span>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <div class="waveform-container">
+                    <canvas class="waveform" data-track="${trackNumber}"></canvas>
+                    <div class="playhead" id="playhead"></div>
+                </div>
+                </div>
+            `;
+            
+            tracksContainer.appendChild(trackItem);
+            
+            // Initialize track data
+            this.tracks.set(trackNumber, {
+                name: config.name,
+                file: config.file,
+                color: config.color,
+                audioBuffer: null,
+                source: null,
+                gainNode: null,
+                panNode: null,
+                isPlaying: false,
+                isMuted: false,
+                isSolo: false,
+                volume: 0.7,
+                pan: 0,
+                element: trackItem,
+                canvas: trackItem.querySelector('.waveform')
+            });
+            
+            // Add event listeners
+            this.addTrackEventListeners(trackNumber);
+        });
+    }
 
-    <script src="script_final_corrected.js"></script>
-</body>
-</html>
+    addTrackEventListeners(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        const element = track.element;
+        
+        // Mute button
+        const muteBtn = element.querySelector('.mute-btn');
+        muteBtn.addEventListener('click', () => this.toggleMute(trackNumber));
+        
+        // Solo button
+        const soloBtn = element.querySelector('.solo-btn');
+        soloBtn.addEventListener('click', () => this.toggleSolo(trackNumber));
+        
+        // Score button
+        const scoreBtn = element.querySelector('.score-btn');
+        scoreBtn.addEventListener('click', () => this.openScore(trackNumber));
+        
+        // Volume slider
+        const volumeSlider = element.querySelector('.volume-slider');
+        volumeSlider.addEventListener('input', (e) => {
+            this.setTrackVolume(trackNumber, e.target.value / 100);
+            element.querySelector('.volume-value').textContent = e.target.value + '%';
+        });
+        
+        // Pan slider
+        const panSlider = element.querySelector('.pan-slider');
+        panSlider.addEventListener('input', (e) => {
+            this.setTrackPan(trackNumber, e.target.value / 100);
+            const value = parseInt(e.target.value);
+            const display = value === 0 ? 'C' : (value > 0 ? `R${value}` : `L${Math.abs(value)}`);
+            element.querySelector('.pan-value').textContent = display;
+        });
+        
+        // Waveform click
+        track.canvas.addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = x / rect.width;
+            this.seekTo(percentage * this.duration);
+        });
+    }
+
+    async loadAllAudioFiles() {
+        console.log('Loading audio files...');
+        const loadPromises = [];
+        
+        for (const [trackNumber, track] of this.tracks) {
+            loadPromises.push(this.loadAudioFile(trackNumber));
+        }
+        
+        await Promise.all(loadPromises);
+        this.calculateDuration();
+        console.log('All audio files loaded');
+    }
+
+    async loadAudioFile(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        
+        try {
+            console.log(`Loading ${track.file}...`);
+            const response = await fetch(track.file);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+            
+            track.audioBuffer = audioBuffer;
+            
+            // Create audio nodes
+            track.gainNode = this.audioContext.createGain();
+            track.panNode = this.audioContext.createStereoPanner();
+            
+            track.gainNode.connect(track.panNode);
+            track.panNode.connect(this.masterGainNode);
+            
+            track.gainNode.gain.value = track.volume;
+            track.panNode.pan.value = track.pan;
+            
+            console.log(`Loaded ${track.name} successfully`);
+        } catch (error) {
+            console.error(`Failed to load ${track.file}:`, error);
+        }
+    }
+
+    calculateDuration() {
+        let maxDuration = 0;
+        for (const [trackNumber, track] of this.tracks) {
+            if (track.audioBuffer) {
+                maxDuration = Math.max(maxDuration, track.audioBuffer.duration);
+            }
+        }
+        this.duration = maxDuration;
+        document.getElementById('totalTime').textContent = this.formatTime(this.duration);
+    }
+
+    drawAllWaveforms() {
+        console.log('Drawing waveforms...');
+        for (const [trackNumber, track] of this.tracks) {
+            if (track.audioBuffer) {
+                this.drawWaveform(trackNumber);
+            }
+        }
+    }
+
+    drawWaveform(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        const canvas = track.canvas;
+        
+        if (!track.audioBuffer || !canvas) {
+            console.log(`Cannot draw waveform for track ${trackNumber}: missing audioBuffer or canvas`);
+            return;
+        }
+        
+        // Wait for canvas to be ready
+        setTimeout(() => {
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) {
+                console.log(`Canvas not ready for track ${trackNumber}, retrying...`);
+                setTimeout(() => this.drawWaveform(trackNumber), 100);
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            const width = rect.width;
+            const height = rect.height;
+            
+            const audioData = track.audioBuffer.getChannelData(0);
+            const step = Math.ceil(audioData.length / width);
+            const amp = height / 2;
+            
+            // Clear canvas
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw waveform
+            ctx.strokeStyle = track.color;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            
+            for (let i = 0; i < width; i++) {
+                let min = 1.0;
+                let max = -1.0;
+                
+                for (let j = 0; j < step; j++) {
+                    const datum = audioData[(i * step) + j];
+                    if (datum < min) min = datum;
+                    if (datum > max) max = datum;
+                }
+                
+                const y1 = (1 + min) * amp;
+                const y2 = (1 + max) * amp;
+                
+                ctx.moveTo(i, y1);
+                ctx.lineTo(i, y2);
+            }
+            
+            ctx.stroke();
+            console.log(`Waveform drawn for ${track.name}`);
+        }, 50);
+    }
+
+    setupEventListeners() {
+        // Play/Pause button
+        document.getElementById('playBtn').addEventListener('click', () => {
+            this.togglePlayback();
+        });
+        
+        // Master volume
+        const masterVolumeSlider = document.getElementById('masterVolumeSlider');
+        masterVolumeSlider.addEventListener('input', (e) => {
+            this.setMasterVolume(e.target.value / 100);
+            document.getElementById('masterVolumeValue').textContent = e.target.value + '%';
+        });
+        
+        // Master volume button
+        const volumeBtn = document.getElementById('volumeBtn');
+        const masterVolumeControl = document.querySelector('.master-volume-control');
+        
+        volumeBtn.addEventListener('click', () => {
+            this.toggleMasterMute();
+        });
+        
+        // Master volume button hover to show/hide volume slider
+        volumeBtn.addEventListener('mouseenter', () => {
+            masterVolumeControl.style.display = 'flex';
+            masterVolumeControl.classList.add('active');
+        });
+        
+        // Create a virtual container that includes both the button and the slider
+        const hideVolumeSlider = () => {
+            masterVolumeControl.style.display = 'none';
+            masterVolumeControl.classList.remove('active');
+        };
+        
+        volumeBtn.addEventListener('mouseleave', (e) => {
+            // Delay hiding to allow mouse to move to slider
+            setTimeout(() => {
+                if (!masterVolumeControl.matches(':hover') && !volumeBtn.matches(':hover')) {
+                    hideVolumeSlider();
+                }
+            }, 100);
+        });
+        
+        masterVolumeControl.addEventListener('mouseleave', (e) => {
+            // Delay hiding to allow mouse to move back to button
+            setTimeout(() => {
+                if (!masterVolumeControl.matches(':hover') && !volumeBtn.matches(':hover')) {
+                    hideVolumeSlider();
+                }
+            }, 100);
+        });
+        
+        // Speed controls
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const speed = parseFloat(e.target.textContent);
+                this.setPlaybackRate(speed);
+                
+                // Update active state
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+        
+        // Reset button
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            this.reset();
+        });
+        
+        // Progress bar
+        document.getElementById('progressBar').addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = x / rect.width;
+            this.seekTo(percentage * this.duration);
+        });
+
+        // Previous/Next buttons
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            this.seekTo(this.currentTime - 10);
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            this.seekTo(this.currentTime + 10);
+        });
+
+        // Loop button
+        document.getElementById('loopBtn').addEventListener('click', () => {
+            this.toggleLoop();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                this.togglePlayback();
+            } else if (e.code === 'ArrowLeft') {
+                this.seekTo(this.currentTime - 10);
+            } else if (e.code === 'ArrowRight') {
+                this.seekTo(this.currentTime + 10);
+            } else if (e.code === 'KeyR') {
+                this.reset();
+            }
+        });
+    }
+
+    togglePlayback() {
+        if (this.isPlaying) {
+            this.pause();
+        } else {
+            this.play();
+        }
+    }
+
+    play() {
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+        
+        this.isPlaying = true;
+        this.startTime = this.audioContext.currentTime - this.pauseTime;
+        
+        // Start all tracks that should be playing
+        for (const [trackNumber, track] of this.tracks) {
+            if (track.audioBuffer && !track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
+                this.startTrack(trackNumber, this.pauseTime);
+            }
+        }
+        
+        // Update UI
+        document.getElementById('playBtn').textContent = '⏸';
+        document.getElementById('playBtn').classList.add('playing');
+        
+        this.updateProgress();
+        console.log('Playback started');
+    }
+
+    pause() {
+        this.isPlaying = false;
+        this.pauseTime = this.audioContext.currentTime - this.startTime;
+        
+        // Stop all tracks
+        for (const [trackNumber, track] of this.tracks) {
+            this.stopTrack(trackNumber);
+        }
+        
+        // Update UI
+        document.getElementById('playBtn').textContent = '▶';
+        document.getElementById('playBtn').classList.remove('playing');
+        
+        console.log('Playback paused');
+    }
+
+    startTrack(trackNumber, offset = 0) {
+        const track = this.tracks.get(trackNumber);
+        
+        if (!track.audioBuffer) return;
+        
+        // Create new source
+        track.source = this.audioContext.createBufferSource();
+        track.source.buffer = track.audioBuffer;
+        track.source.playbackRate.value = this.playbackRate;
+        
+        // Connect to gain node
+        track.source.connect(track.gainNode);
+        
+        // Handle track end
+        track.source.onended = () => {
+            if (!this.isSeeking) {
+                track.isPlaying = false;
+                track.source = null;
+            }
+        };
+        
+        // Start playback
+        const startTime = this.audioContext.currentTime;
+        const duration = track.audioBuffer.duration - offset;
+        
+        if (duration > 0) {
+            track.source.start(startTime, offset, duration);
+            track.isPlaying = true;
+        }
+    }
+
+    seekTo(time) {
+        time = Math.max(0, Math.min(time, this.duration));
+        
+        const wasPlaying = this.isPlaying;
+        
+        this.pauseTime = time;
+        this.currentTime = time;
+        
+        // Update progress display
+        const percentage = (time / this.duration) * 100;
+        document.getElementById("progressFill").style.width = percentage + "%";
+        document.getElementById("currentTime").textContent = this.formatTime(time);
+        this.updateAllPlayheads(); // Atualiza o playhead mesmo quando a música está parada
+
+        if (wasPlaying) {
+            this.isSeeking = true;
+            for (const [trackNumber, track] of this.tracks) {
+                if (track.source) {
+                    this.stopTrack(trackNumber);
+                }
+            }
+            this.startTime = this.audioContext.currentTime - this.pauseTime;
+            for (const [trackNumber, track] of this.tracks) {
+                if (track.audioBuffer && !track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
+                    this.startTrack(trackNumber, this.pauseTime);
+                }
+            }
+            setTimeout(() => {
+                this.isSeeking = false;
+            }, 50);
+        }
+        
+        console.log(`Seeked to ${this.formatTime(time)}`);
+    }
+
+    updateProgress() {
+        if (this.isPlaying) {
+            this.currentTime = this.audioContext.currentTime - this.startTime;
+
+            if (this.currentTime >= this.duration) {
+                if (this.isLooping) {
+                    this.pauseTime = 0;
+                    this.play();
+                } else {
+                    this.pause();
+                    this.seekTo(0);
+                }
+                return;
+            }
+
+            const percentage = (this.currentTime / this.duration) * 100;
+            document.getElementById("progressFill").style.width = percentage + "%";
+            document.getElementById("currentTime").textContent = this.formatTime(this.currentTime);
+            
+            // Update all playheads
+            this.updateAllPlayheads();
+            
+            requestAnimationFrame(() => this.updateProgress());
+        }
+    }
+
+    updateAllPlayheads() {
+        const percentage = (this.currentTime / this.duration) * 100;
+        document.querySelectorAll('.playhead').forEach(playhead => {
+            playhead.style.left = percentage + '%';
+        });
+    }
+
+    stopTrack(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        if (track.source) {
+            try {
+                track.source.stop();
+            } catch (e) {
+                // Ignore errors if source was already stopped
+            }
+            track.source = null;
+            track.isPlaying = false;
+        }
+    }
+
+    setMasterVolume(volume) {
+        this.masterVolume = volume;
+        if (!this.isMasterMuted) {
+            this.masterGainNode.gain.value = volume;
+        }
+    }
+
+    toggleMasterMute() {
+        this.isMasterMuted = !this.isMasterMuted;
+        
+        if (this.isMasterMuted) {
+            this.masterGainNode.gain.value = 0;
+            document.getElementById('volumeBtn').textContent = '🔇';
+            document.getElementById('volumeBtn').classList.add('muted');
+        } else {
+            this.masterGainNode.gain.value = this.masterVolume;
+            document.getElementById('volumeBtn').textContent = '🔊';
+            document.getElementById('volumeBtn').classList.remove('muted');
+        }
+        
+        console.log(`Master ${this.isMasterMuted ? 'muted' : 'unmuted'}`);
+    }
+
+    setTrackVolume(trackNumber, volume) {
+        const track = this.tracks.get(trackNumber);
+        track.volume = volume;
+        
+        if (track.gainNode && !track.isMuted) {
+            track.gainNode.gain.value = volume;
+        }
+    }
+
+    setTrackPan(trackNumber, pan) {
+        const track = this.tracks.get(trackNumber);
+        track.pan = pan;
+        
+        if (track.panNode) {
+            track.panNode.pan.value = pan;
+        }
+    }
+
+    toggleMute(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        track.isMuted = !track.isMuted;
+        
+        if (track.gainNode) {
+            track.gainNode.gain.value = track.isMuted ? 0 : track.volume;
+        }
+
+        if (this.isPlaying && track.gainNode) {
+            track.gainNode.gain.value = track.isMuted ? 0 : track.volume;
+        }
+        
+        // Update UI
+        const muteBtn = track.element.querySelector('.mute-btn');
+        muteBtn.classList.toggle('active', track.isMuted);
+        
+        console.log(`Track ${trackNumber} ${track.isMuted ? 'muted' : 'unmuted'}`);
+    }
+
+    toggleSolo(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        
+        if (track.isSolo) {
+            track.isSolo = false;
+            this.soloedTracks.delete(trackNumber);
+        } else {
+            track.isSolo = true;
+            this.soloedTracks.add(trackNumber);
+        }
+        
+        // Update UI
+        const soloBtn = track.element.querySelector('.solo-btn');
+        soloBtn.classList.toggle('active', track.isSolo);
+        
+        if (this.isPlaying) {
+            for (const [tNum, t] of this.tracks) {
+                if (t.gainNode) {
+                    const shouldPlay = !t.isMuted && (this.soloedTracks.size === 0 || t.isSolo);
+                    t.gainNode.gain.value = shouldPlay ? t.volume : 0;
+                }
+            }
+        }
+        
+        console.log(`Track ${trackNumber} solo ${track.isSolo ? 'enabled' : 'disabled'}`);
+    }
+
+    setPlaybackRate(rate) {
+        this.playbackRate = rate;
+        
+        for (const [trackNumber, track] of this.tracks) {
+            if (track.source && track.isPlaying) {
+                track.source.playbackRate.value = rate;
+            }
+        }
+        
+        console.log(`Playback rate set to ${rate}x`);
+    }
+
+    toggleLoop() {
+        this.isLooping = !this.isLooping;
+        
+        const loopBtn = document.getElementById('loopBtn');
+        loopBtn.classList.toggle('active', this.isLooping);
+        
+        console.log(`Loop ${this.isLooping ? 'enabled' : 'disabled'}`);
+    }
+
+    // Função modificada para carregar PDFs
+    openScore(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        if (track) {
+            // Abre modal de partitura
+            const modal = document.getElementById('scoreModal');
+            const modalTitle = document.getElementById('scoreModalTitle');
+            const scorePDF = document.getElementById('scoreModalPDF');
+            const scoreError = document.getElementById('scoreModalError');
+            
+            // Atualiza título
+            modalTitle.textContent = `Partitura - ${track.name}`;
+            
+            // Tenta carregar a partitura da pasta partituras/
+            const scorePath = `partituras/${track.name}.pdf`;
+            
+            // Verifica se o PDF existe
+            fetch(scorePath, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        // PDF existe, carrega no iframe
+                        scorePDF.src = scorePath;
+                        scorePDF.style.display = 'block';
+                        scoreError.style.display = 'none';
+                        
+                        // Armazena o caminho do PDF para download/impressão
+                        modal.dataset.pdfPath = scorePath;
+                    } else {
+                        throw new Error('PDF não encontrado');
+                    }
+                })
+                .catch(error => {
+                    // PDF não existe, mostra erro
+                    scorePDF.style.display = 'none';
+                    scoreError.style.display = 'block';
+                    scoreError.querySelector('p').textContent = `Partitura não encontrada para ${track.name}`;
+                });
+            
+            // Mostra o modal
+            modal.style.display = 'flex';
+        }
+    }
+    
+    closeScoreModal() {
+        const modal = document.getElementById('scoreModal');
+        const scorePDF = document.getElementById('scoreModalPDF');
+        
+        // Limpa o iframe
+        scorePDF.src = '';
+        
+        // Esconde o modal
+        modal.style.display = 'none';
+        
+        // Remove o dataset
+        delete modal.dataset.pdfPath;
+    }
+
+    // Função para baixar o PDF
+    downloadScore() {
+        const modal = document.getElementById('scoreModal');
+        const pdfPath = modal.dataset.pdfPath;
+        
+        if (pdfPath) {
+            // Cria um link temporário para download
+            const link = document.createElement('a');
+            link.href = pdfPath;
+            link.download = pdfPath.split('/').pop(); // Nome do arquivo
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+
+    // Função para imprimir o PDF
+    printScore() {
+        const modal = document.getElementById('scoreModal');
+        const pdfPath = modal.dataset.pdfPath;
+        
+        if (pdfPath) {
+            // Abre o PDF em uma nova janela para impressão
+            const printWindow = window.open(pdfPath, '_blank');
+            if (printWindow) {
+                printWindow.onload = () => {
+                    printWindow.print();
+                };
+            }
+        }
+    }
+
+    // Função para tela cheia
+    toggleFullscreen() {
+        const modal = document.getElementById('scoreModal');
+        
+        if (!document.fullscreenElement) {
+            if (modal.requestFullscreen) {
+                modal.requestFullscreen();
+            } else if (modal.webkitRequestFullscreen) {
+                modal.webkitRequestFullscreen();
+            } else if (modal.msRequestFullscreen) {
+                modal.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+
+    reset() {
+        console.log("Resetting track controls");
+        for (const [trackNumber, track] of this.tracks) {
+            // Reset mute
+            if (track.isMuted) {
+                this.toggleMute(trackNumber);
+            }
+            // Reset solo
+            if (track.isSolo) {
+                this.toggleSolo(trackNumber);
+            }
+            // Reset volume to default (0.7)
+            this.setTrackVolume(trackNumber, 0.7);
+            track.element.querySelector(".volume-slider").value = 70;
+            track.element.querySelector(".volume-value").textContent = "70%";
+            // Reset pan to default (0)
+            this.setTrackPan(trackNumber, 0);
+            track.element.querySelector(".pan-slider").value = 0;
+            track.element.querySelector(".pan-value").textContent = "C";
+        }
+        // Ensure master volume is not muted and reset to default if needed
+        if (this.isMasterMuted) {
+            this.toggleMasterMute();
+        }
+        this.setMasterVolume(0.7);
+        document.getElementById("masterVolumeSlider").value = 70;
+        document.getElementById("masterVolumeValue").textContent = "70%";
+
+        // Reset playback rate to 1x
+        this.setPlaybackRate(1);
+        document.querySelectorAll(".speed-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(".speed-btn[data-speed='1']").classList.add("active");
+
+        // Reset loop state
+        if (this.isLooping) {
+            this.toggleLoop();
+        }
+    }
+
+    formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    }
+}
+
+// Initialize the WebDAW when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.webDAW = new WebDAW();
+    
+    // Event listeners para o modal de partitura com suporte a PDF
+    const modal = document.getElementById('scoreModal');
+    const closeBtn = document.getElementById('closeScoreModal');
+    const downloadBtn = document.getElementById('scoreDownload');
+    const printBtn = document.getElementById('scorePrint');
+    const fullscreenBtn = document.getElementById('scoreFullscreen');
+    
+    // Fechar modal ao clicar no X
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            window.webDAW.closeScoreModal();
+        });
+    }
+    
+    // Fechar modal ao clicar fora do conteúdo
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                window.webDAW.closeScoreModal();
+            }
+        });
+    }
+    
+    // Botão de download
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            window.webDAW.downloadScore();
+        });
+    }
+    
+    // Botão de impressão
+    if (printBtn) {
+        printBtn.addEventListener('click', () => {
+            window.webDAW.printScore();
+        });
+    }
+    
+    // Botão de tela cheia
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', () => {
+            window.webDAW.toggleFullscreen();
+        });
+    }
+    
+    // Atalho de teclado para fechar modal (ESC)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            window.webDAW.closeScoreModal();
+        }
+    });
+});
