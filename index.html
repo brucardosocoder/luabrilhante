@@ -19,11 +19,11 @@
     <link rel="icon" href="luabrilhante-16x16.ico" type="image/x-icon">
     <link rel="icon" href="luabrilhante-32x32.ico" type="image/x-icon">
     <title>Lua Brilhante</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles_final_corrected.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Header do usuário -->
         <header>
             <div class="song-info">
                     <h1>Seção A</h1>
@@ -43,20 +43,15 @@
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- Main Content do meu projeto (index_pdf.html) -->
         <main class="main-content">
-            <!-- Timeline -->
-            <div class="timeline-container">
-                <div class="timeline-ruler" id="timelineRuler"></div>
-            </div>
-
-            <!-- Combined Tracks and Waveforms -->
-            <div class="tracks-container" id="tracksContainer">
-                <!-- Combined track items and waveforms will be dynamically generated here -->
+            <div class="audio-player">
+                <div class="track-list">                    
+                </div>
             </div>
         </main>
 
-        <!-- Transport Controls -->
+        <!-- Footer do usuário -->
         <footer>
             <div class="transport-controls">
             <div class="transport-left">
@@ -123,6 +118,48 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Score Modal - Modificado para PDFs -->
+    <div class="score-modal" id="scoreModal" style="display: none;">
+        <div class="score-modal-content">
+            <div class="score-modal-header">
+                <h2 id="scoreModalTitle">Partitura</h2>
+                <div class="score-modal-controls">
+                    <button class="score-control-btn" id="scoreDownload" title="Baixar PDF">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7,10 12,15 17,10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </button>
+                    <button class="score-control-btn" id="scorePrint" title="Imprimir PDF">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 6,2 18,2 18,9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                    </button>
+                    <button class="score-control-btn" id="scoreFullscreen" title="Tela Cheia">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                        </svg>
+                    </button>
+                    <button class="score-close-btn" id="closeScoreModal" title="Fechar">×</button>
+                </div>
+            </div>
+            <div class="score-modal-body">
+                <iframe id="scoreModalPDF" src="" frameborder="0" style="width: 100%; height: 100%; display: none;"></iframe>
+                <div id="scoreModalError" class="score-error" style="display: none;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 3v15a3 3 0 1 0 3 3V9l9-3V3l-9 3z"/>
+                        <circle cx="6" cy="18" r="3"/>
+                        <circle cx="18" cy="6" r="3"/>
+                    </svg>
+                    <p>Partitura não encontrada</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script_final_corrected.js"></script>
 </body>
 </html>
