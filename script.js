@@ -14,8 +14,13 @@ class WebDAW {
         this.isMasterMuted = false;
         this.masterVolume = 0.7;
         this.isLooping = false;
-        
-        // Track configurations
+
+        this.pdfDoc = null;
+        this.pageNum = 1;
+        this.pageRendering = false;
+        this.pageNumPending = null;
+        this.pdfScale = 1.5;
+
         this.trackConfigs = [
             { name: 'Violino 1', file: 'audio/Violino 1.mp3', color: '#ff6b6b' },
             { name: 'Violino 2', file: 'audio/Violino 2.mp3', color: '#4ecdc4' },
@@ -61,7 +66,7 @@ class WebDAW {
         this.trackConfigs.forEach((config, index) => {
             const trackNumber = index + 1;
             
-            // Create track item
+
             const trackItem = document.createElement('div');
             trackItem.className = 'track-item';
             trackItem.dataset.track = trackNumber;
@@ -95,7 +100,7 @@ class WebDAW {
             
             tracksContainer.appendChild(trackItem);
             
-            // Initialize track data
+
             this.tracks.set(trackNumber, {
                 name: config.name,
                 file: config.file,
@@ -113,7 +118,7 @@ class WebDAW {
                 canvas: trackItem.querySelector('.waveform')
             });
             
-            // Add event listeners
+
             this.addTrackEventListeners(trackNumber);
         });
     }
@@ -122,26 +127,26 @@ class WebDAW {
         const track = this.tracks.get(trackNumber);
         const element = track.element;
         
-        // Mute button
+
         const muteBtn = element.querySelector('.mute-btn');
         muteBtn.addEventListener('click', () => this.toggleMute(trackNumber));
         
-        // Solo button
+
         const soloBtn = element.querySelector('.solo-btn');
         soloBtn.addEventListener('click', () => this.toggleSolo(trackNumber));
         
-        // Score button
+
         const scoreBtn = element.querySelector('.score-btn');
         scoreBtn.addEventListener('click', () => this.openScore(trackNumber));
         
-        // Volume slider
+
         const volumeSlider = element.querySelector('.volume-slider');
         volumeSlider.addEventListener('input', (e) => {
             this.setTrackVolume(trackNumber, e.target.value / 100);
             element.querySelector('.volume-value').textContent = e.target.value + '%';
         });
         
-        // Pan slider
+
         const panSlider = element.querySelector('.pan-slider');
         panSlider.addEventListener('input', (e) => {
             this.setTrackPan(trackNumber, e.target.value / 100);
@@ -150,7 +155,7 @@ class WebDAW {
             element.querySelector('.pan-value').textContent = display;
         });
         
-        // Waveform click
+
         track.canvas.addEventListener('click', (e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -183,7 +188,7 @@ class WebDAW {
             
             track.audioBuffer = audioBuffer;
             
-            // Create audio nodes
+
             track.gainNode = this.audioContext.createGain();
             track.panNode = this.audioContext.createStereoPanner();
             
@@ -228,7 +233,7 @@ class WebDAW {
             return;
         }
         
-        // Wait for canvas to be ready
+
         setTimeout(() => {
             const rect = canvas.getBoundingClientRect();
             if (rect.width === 0 || rect.height === 0) {
@@ -239,7 +244,7 @@ class WebDAW {
             
             const ctx = canvas.getContext('2d');
             
-            // Set canvas size
+
             canvas.width = rect.width * window.devicePixelRatio;
             canvas.height = rect.height * window.devicePixelRatio;
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
@@ -251,11 +256,11 @@ class WebDAW {
             const step = Math.ceil(audioData.length / width);
             const amp = height / 2;
             
-            // Clear canvas
+
             ctx.fillStyle = '#1a1a1a';
             ctx.fillRect(0, 0, width, height);
             
-            // Draw waveform
+
             ctx.strokeStyle = track.color;
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -283,19 +288,19 @@ class WebDAW {
     }
 
     setupEventListeners() {
-        // Play/Pause button
+
         document.getElementById('playBtn').addEventListener('click', () => {
             this.togglePlayback();
         });
         
-        // Master volume
+
         const masterVolumeSlider = document.getElementById('masterVolumeSlider');
         masterVolumeSlider.addEventListener('input', (e) => {
             this.setMasterVolume(e.target.value / 100);
             document.getElementById('masterVolumeValue').textContent = e.target.value + '%';
         });
         
-        // Master volume button
+
         const volumeBtn = document.getElementById('volumeBtn');
         const masterVolumeControl = document.querySelector('.master-volume-control');
         
@@ -303,20 +308,20 @@ class WebDAW {
             this.toggleMasterMute();
         });
         
-        // Master volume button hover to show/hide volume slider
+
         volumeBtn.addEventListener('mouseenter', () => {
             masterVolumeControl.style.display = 'flex';
             masterVolumeControl.classList.add('active');
         });
         
-        // Create a virtual container that includes both the button and the slider
+
         const hideVolumeSlider = () => {
             masterVolumeControl.style.display = 'none';
             masterVolumeControl.classList.remove('active');
         };
         
         volumeBtn.addEventListener('mouseleave', (e) => {
-            // Delay hiding to allow mouse to move to slider
+
             setTimeout(() => {
                 if (!masterVolumeControl.matches(':hover') && !volumeBtn.matches(':hover')) {
                     hideVolumeSlider();
@@ -325,7 +330,7 @@ class WebDAW {
         });
         
         masterVolumeControl.addEventListener('mouseleave', (e) => {
-            // Delay hiding to allow mouse to move back to button
+
             setTimeout(() => {
                 if (!masterVolumeControl.matches(':hover') && !volumeBtn.matches(':hover')) {
                     hideVolumeSlider();
@@ -333,24 +338,20 @@ class WebDAW {
             }, 100);
         });
         
-        // Speed controls
         document.querySelectorAll('.speed-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const speed = parseFloat(e.target.textContent);
                 this.setPlaybackRate(speed);
                 
-                // Update active state
                 document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
             });
         });
         
-        // Reset button
         document.getElementById('resetBtn').addEventListener('click', () => {
             this.reset();
         });
         
-        // Progress bar
         document.getElementById('progressBar').addEventListener('click', (e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -358,7 +359,6 @@ class WebDAW {
             this.seekTo(percentage * this.duration);
         });
 
-        // Previous/Next buttons
         document.getElementById('prevBtn').addEventListener('click', () => {
             this.seekTo(this.currentTime - 10);
         });
@@ -367,12 +367,10 @@ class WebDAW {
             this.seekTo(this.currentTime + 10);
         });
 
-        // Loop button
         document.getElementById('loopBtn').addEventListener('click', () => {
             this.toggleLoop();
         });
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -403,14 +401,12 @@ class WebDAW {
         this.isPlaying = true;
         this.startTime = this.audioContext.currentTime - this.pauseTime;
         
-        // Start all tracks that should be playing
         for (const [trackNumber, track] of this.tracks) {
             if (track.audioBuffer && !track.isMuted && (this.soloedTracks.size === 0 || track.isSolo)) {
                 this.startTrack(trackNumber, this.pauseTime);
             }
         }
         
-        // Update UI
         document.getElementById('playBtn').textContent = '⏸';
         document.getElementById('playBtn').classList.add('playing');
         
@@ -422,12 +418,10 @@ class WebDAW {
         this.isPlaying = false;
         this.pauseTime = this.audioContext.currentTime - this.startTime;
         
-        // Stop all tracks
         for (const [trackNumber, track] of this.tracks) {
             this.stopTrack(trackNumber);
         }
         
-        // Update UI
         document.getElementById('playBtn').textContent = '▶';
         document.getElementById('playBtn').classList.remove('playing');
         
@@ -439,23 +433,19 @@ class WebDAW {
         
         if (!track.audioBuffer) return;
         
-        // Create new source
         track.source = this.audioContext.createBufferSource();
         track.source.buffer = track.audioBuffer;
         track.source.playbackRate.value = this.playbackRate;
         
-        // Connect to gain node
         track.source.connect(track.gainNode);
         
-        // Handle track end
         track.source.onended = () => {
             if (!this.isSeeking) {
                 track.isPlaying = false;
                 track.source = null;
             }
         };
-        
-        // Start playback
+
         const startTime = this.audioContext.currentTime;
         const duration = track.audioBuffer.duration - offset;
         
@@ -473,11 +463,10 @@ class WebDAW {
         this.pauseTime = time;
         this.currentTime = time;
         
-        // Update progress display
         const percentage = (time / this.duration) * 100;
         document.getElementById("progressFill").style.width = percentage + "%";
         document.getElementById("currentTime").textContent = this.formatTime(time);
-        this.updateAllPlayheads(); // Atualiza o playhead mesmo quando a música está parada
+        this.updateAllPlayheads();
 
         if (wasPlaying) {
             this.isSeeking = true;
@@ -519,7 +508,6 @@ class WebDAW {
             document.getElementById("progressFill").style.width = percentage + "%";
             document.getElementById("currentTime").textContent = this.formatTime(this.currentTime);
             
-            // Update all playheads
             this.updateAllPlayheads();
             
             requestAnimationFrame(() => this.updateProgress());
@@ -539,7 +527,7 @@ class WebDAW {
             try {
                 track.source.stop();
             } catch (e) {
-                // Ignore errors if source was already stopped
+
             }
             track.source = null;
             track.isPlaying = false;
@@ -599,7 +587,6 @@ class WebDAW {
             track.gainNode.gain.value = track.isMuted ? 0 : track.volume;
         }
         
-        // Update UI
         const muteBtn = track.element.querySelector('.mute-btn');
         muteBtn.classList.toggle('active', track.isMuted);
         
@@ -617,7 +604,6 @@ class WebDAW {
             this.soloedTracks.add(trackNumber);
         }
         
-        // Update UI
         const soloBtn = track.element.querySelector('.solo-btn');
         soloBtn.classList.toggle('active', track.isSolo);
         
@@ -654,86 +640,148 @@ class WebDAW {
         console.log(`Loop ${this.isLooping ? 'enabled' : 'disabled'}`);
     }
 
-    // Função modificada para carregar PDFs
-    openScore(trackNumber) {
-        const track = this.tracks.get(trackNumber);
-        if (track) {
-            // Abre modal de partitura
-            const modal = document.getElementById('scoreModal');
-            const modalTitle = document.getElementById('scoreModalTitle');
-            const scorePDF = document.getElementById('scoreModalPDF');
-            const scoreError = document.getElementById('scoreModalError');
-            
-            // Atualiza título
-            modalTitle.textContent = `Partitura - ${track.name}`;
-            
-            // Tenta carregar a partitura da pasta partituras/
-            const scorePath = `partituras/${track.name}.pdf`;
-            
-            // Verifica se o PDF existe
-            fetch(scorePath, { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        // PDF existe, carrega no iframe
-                        scorePDF.src = scorePath;
-                        scorePDF.style.display = 'block';
-                        scoreError.style.display = 'none';
-                        
-                        // Armazena o caminho do PDF para download/impressão
-                        modal.dataset.pdfPath = scorePath;
-                    } else {
-                        throw new Error('PDF não encontrado');
-                    }
-                })
-                .catch(error => {
-                    // PDF não existe, mostra erro
-                    scorePDF.style.display = 'none';
-                    scoreError.style.display = 'block';
-                    scoreError.querySelector('p').textContent = `Partitura não encontrada para ${track.name}`;
-                });
-            
-            // Mostra o modal
-            modal.style.display = 'flex';
+     /**
+     * Renderiza uma página específica do PDF.
+     * @param {number} num - O número da página a ser renderizada.
+     */
+    renderPage(num) {
+    this.pageRendering = true;
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+    const pageNumSpan = document.getElementById('pdf-page-num');
+
+    this.pdfDoc.getPage(num).then((page) => {
+
+        const viewport = page.getViewport({ scale: this.pdfScale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: ctx,
+            viewport: viewport
+        };
+        const renderTask = page.render(renderContext);
+
+        renderTask.promise.then(() => {
+            this.pageRendering = false;
+            if (this.pageNumPending !== null) {
+                this.renderPage(this.pageNumPending);
+                this.pageNumPending = null;
+            }
+        });
+    });
+
+    pageNumSpan.textContent = num;
+}
+
+    queueRenderPage(num) {
+        if (this.pageRendering) {
+            this.pageNumPending = num;
+        } else {
+            this.renderPage(num);
         }
     }
-    
-    closeScoreModal() {
-        const modal = document.getElementById('scoreModal');
-        const scorePDF = document.getElementById('scoreModalPDF');
-        
-        // Limpa o iframe
-        scorePDF.src = '';
-        
-        // Esconde o modal
-        modal.style.display = 'none';
-        
-        // Remove o dataset
-        delete modal.dataset.pdfPath;
+
+    onPrevPage() {
+        if (this.pageNum <= 1) {
+            return;
+        }
+        this.pageNum--;
+        this.queueRenderPage(this.pageNum);
     }
 
-    // Função para baixar o PDF
+
+    onNextPage() {
+        if (this.pageNum >= this.pdfDoc.numPages) {
+            return;
+        }
+        this.pageNum++;
+        this.queueRenderPage(this.pageNum);
+    }
+
+    /**
+     * Abre o modal da partitura e carrega o PDF usando PDF.js.
+     * @param {number} trackNumber - O número da faixa.
+     */
+    openScore(trackNumber) {
+        const track = this.tracks.get(trackNumber);
+        if (!track) return;
+
+        const modal = document.getElementById('scoreModal');
+        const modalTitle = document.getElementById('scoreModalTitle');
+        const scorePath = `partituras/${track.name}.pdf`;
+
+
+        const loadingTaskEl = document.getElementById('pdf-loading');
+        const errorEl = document.getElementById('pdf-error');
+        const navigationEl = document.getElementById('pdf-navigation');
+        const canvasContainer = document.getElementById('pdf-viewer-container');
+
+        modalTitle.textContent = `Partitura - ${track.name}`;
+        loadingTaskEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        navigationEl.style.display = 'none';
+        canvasContainer.style.display = 'none';
+        modal.dataset.pdfPath = scorePath;
+
+        modal.style.display = 'flex';
+
+        const loadingTask = pdfjsLib.getDocument(scorePath);
+        loadingTask.promise.then((pdfDoc_) => {
+            loadingTaskEl.style.display = 'none';
+            canvasContainer.style.display = 'block';
+            
+            this.pdfDoc = pdfDoc_;
+            document.getElementById('pdf-page-count').textContent = this.pdfDoc.numPages;
+            this.pageNum = 1;
+
+            this.renderPage(this.pageNum);
+
+            if (this.pdfDoc.numPages > 1) {
+                navigationEl.style.display = 'flex';
+            }
+
+        }, (reason) => {
+            console.error(reason);
+            loadingTaskEl.style.display = 'none';
+            errorEl.style.display = 'block';
+            errorEl.querySelector('p').textContent = `Partitura não encontrada para ${track.name}`;
+        });
+    }
+
+    closeScoreModal() {
+        const modal = document.getElementById('scoreModal');
+        modal.style.display = 'none';
+        
+        this.pdfDoc = null;
+        this.pageNum = 1;
+        
+        const canvas = document.getElementById('pdf-canvas');
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
     downloadScore() {
         const modal = document.getElementById('scoreModal');
         const pdfPath = modal.dataset.pdfPath;
         
         if (pdfPath) {
-            // Cria um link temporário para download
+
             const link = document.createElement('a');
             link.href = pdfPath;
-            link.download = pdfPath.split('/').pop(); // Nome do arquivo
+            link.download = pdfPath.split('/').pop();
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
     }
 
-    // Função para imprimir o PDF
     printScore() {
         const modal = document.getElementById('scoreModal');
         const pdfPath = modal.dataset.pdfPath;
         
         if (pdfPath) {
-            // Abre o PDF em uma nova janela para impressão
+
             const printWindow = window.open(pdfPath, '_blank');
             if (printWindow) {
                 printWindow.onload = () => {
@@ -743,7 +791,6 @@ class WebDAW {
         }
     }
 
-    // Função para tela cheia
     toggleFullscreen() {
         const modal = document.getElementById('scoreModal');
         
@@ -769,24 +816,24 @@ class WebDAW {
     reset() {
         console.log("Resetting track controls");
         for (const [trackNumber, track] of this.tracks) {
-            // Reset mute
+
             if (track.isMuted) {
                 this.toggleMute(trackNumber);
             }
-            // Reset solo
+
             if (track.isSolo) {
                 this.toggleSolo(trackNumber);
             }
-            // Reset volume to default (0.7)
+
             this.setTrackVolume(trackNumber, 0.7);
             track.element.querySelector(".volume-slider").value = 70;
             track.element.querySelector(".volume-value").textContent = "70%";
-            // Reset pan to default (0)
+
             this.setTrackPan(trackNumber, 0);
             track.element.querySelector(".pan-slider").value = 0;
             track.element.querySelector(".pan-value").textContent = "C";
         }
-        // Ensure master volume is not muted and reset to default if needed
+
         if (this.isMasterMuted) {
             this.toggleMasterMute();
         }
@@ -794,12 +841,10 @@ class WebDAW {
         document.getElementById("masterVolumeSlider").value = 70;
         document.getElementById("masterVolumeValue").textContent = "70%";
 
-        // Reset playback rate to 1x
         this.setPlaybackRate(1);
         document.querySelectorAll(".speed-btn").forEach(btn => btn.classList.remove("active"));
         document.querySelector(".speed-btn[data-speed='1']").classList.add("active");
 
-        // Reset loop state
         if (this.isLooping) {
             this.toggleLoop();
         }
@@ -810,60 +855,100 @@ class WebDAW {
         const secs = Math.floor(seconds % 60);
         return `${minutes}:${secs.toString().padStart(2, '0')}`;
     }
+
+zoomIn() {
+    if (this.pdfScale >= 3.0) {
+        return;
+    }
+    this.pdfScale += 0.25;
+    this.queueRenderPage(this.pageNum);
 }
 
-// Initialize the WebDAW when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    window.webDAW = new WebDAW();
-    
-    // Event listeners para o modal de partitura com suporte a PDF
-    const modal = document.getElementById('scoreModal');
-    const closeBtn = document.getElementById('closeScoreModal');
-    const downloadBtn = document.getElementById('scoreDownload');
-    const printBtn = document.getElementById('scorePrint');
-    const fullscreenBtn = document.getElementById('scoreFullscreen');
-    
-    // Fechar modal ao clicar no X
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            window.webDAW.closeScoreModal();
-        });
+zoomOut() {
+    if (this.pdfScale <= 0.5) {
+        return;
     }
-    
-    // Fechar modal ao clicar fora do conteúdo
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
+    this.pdfScale -= 0.25;
+    this.queueRenderPage(this.pageNum);
+}
+
+fitToWidth() {
+    if (!this.pdfDoc) return;
+
+    const container = document.getElementById('pdf-viewer-container');
+    const containerWidth = container.clientWidth;
+
+    this.pdfDoc.getPage(this.pageNum).then(page => {
+        const pageWidth = page.getViewport({ scale: 1.0 }).width;
+        this.pdfScale = (containerWidth / pageWidth) * 0.98;
+        this.queueRenderPage(this.pageNum);
+    });
+}
+}
+
+    document.addEventListener('DOMContentLoaded', () => {
+        window.webDAW = new WebDAW();
+        
+        const modal = document.getElementById('scoreModal');
+        const closeBtn = document.getElementById('closeScoreModal');
+        const downloadBtn = document.getElementById('scoreDownload');
+        const printBtn = document.getElementById('scorePrint');
+        const fullscreenBtn = document.getElementById('scoreFullscreen');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                window.webDAW.closeScoreModal();
+            });
+        }
+        
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    window.webDAW.closeScoreModal();
+                }
+            });
+        }
+        
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                window.webDAW.downloadScore();
+            });
+        }
+        
+        if (printBtn) {
+            printBtn.addEventListener('click', () => {
+                window.webDAW.printScore();
+            });
+        }
+        
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', () => {
+                window.webDAW.toggleFullscreen();
+            });
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
                 window.webDAW.closeScoreModal();
             }
         });
-    }
-    
-    // Botão de download
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            window.webDAW.downloadScore();
+
+        document.getElementById('pdf-prev').addEventListener('click', () => {
+            window.webDAW.onPrevPage();
         });
-    }
-    
-    // Botão de impressão
-    if (printBtn) {
-        printBtn.addEventListener('click', () => {
-            window.webDAW.printScore();
+        document.getElementById('pdf-next').addEventListener('click', () => {
+            window.webDAW.onNextPage();
         });
-    }
-    
-    // Botão de tela cheia
-    if (fullscreenBtn) {
-        fullscreenBtn.addEventListener('click', () => {
-            window.webDAW.toggleFullscreen();
+
+        document.getElementById('zoomInBtn').addEventListener('click', () => {
+            window.webDAW.zoomIn();
         });
-    }
-    
-    // Atalho de teclado para fechar modal (ESC)
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            window.webDAW.closeScoreModal();
-        }
-    });
+
+        document.getElementById('zoomOutBtn').addEventListener('click', () => {
+            window.webDAW.zoomOut();
+        });
+
+        document.getElementById('fitToWidthBtn').addEventListener('click', () => {
+            window.webDAW.fitToWidth();
+        });
 });
