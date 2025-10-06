@@ -1,3 +1,4 @@
+/* Reset e Base */
 * {
     margin: 0;
     padding: 0;
@@ -19,17 +20,17 @@ body {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 }
 
-
+/* Header - Estilos do usuário */
 header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 20px;
-    background-image: url('lua_brilhante_header_background.png');
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    z-index: 1;
+    background-image: url('lua_brilhante_header_background.png'); /* Caminho da imagem */
+    background-size: cover;   /* Faz a imagem cobrir toda a div */
+    background-position: center; /* Centraliza a imagem */
+    position: relative; /* Necessário para posicionar o pseudo-elemento */
+    z-index: 1; /* Garante que o conteúdo principal fique acima da sobreposição */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     z-index: 100;
@@ -104,6 +105,7 @@ header {
   2px 2px 2px rgb(0, 0, 0);
 }
 
+/* Main Content - Estilos do meu projeto */
 .main-content {
     flex: 1;
     padding: 1rem;
@@ -290,6 +292,7 @@ header {
     display: block;
 }
 
+/* Transport Controls - Estilos do usuário */
 .transport-controls {
     display: flex;
     align-items: center;
@@ -367,6 +370,7 @@ header {
     border-color: #ff6b35;
 }
 
+/* Master Volume Control */
 .master-volume-control {
     position: relative;
     display: inline-block;
@@ -463,6 +467,7 @@ header {
     transition: width 0.1s ease;
 }
 
+/* Speed Controls */
 .speed-controls {
     display: flex;
     gap: 4px;
@@ -490,6 +495,7 @@ header {
     color: #000;
 }
 
+/* Reset Section */
 .reset-section {
     margin-left: 10px;
 }
@@ -510,6 +516,7 @@ header {
     transform: translateY(-1px);
 }
 
+/* Keyboard Shortcuts Help */
 .shortcuts-help {
     position: fixed;
     top: 0;
@@ -577,7 +584,7 @@ header {
 }
 
 .brucardoso a {
-    display: inline;
+    display: inline; /* Inline no desktop */
 }
 
 .underline {
@@ -585,14 +592,15 @@ header {
 }
 
 .loop-btn.active {
-    background-color: #007bff;
+    background-color: #007bff; /* Cor de destaque para o botão de loop ativo */
     color: white;
 }
 
+/* Header e Footer sempre visíveis */
 header,
 footer {
     position: sticky;
-    z-index: 1000;
+    z-index: 1000; /* Garante que fiquem acima de outros elementos */
 }
 
 header {
@@ -603,18 +611,18 @@ footer {
     bottom: 0;
 }
 
-
+/* Estilos para o master-volume-control */
 .master-volume-control {
-    position: absolute;
-    bottom: 100%;
+    position: absolute; /* Para que ele possa aparecer sobre outros elementos */
+    bottom: 100%; /* Posiciona acima do footer */
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.9); /* Fundo escuro para destaque */
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     padding: 10px 15px;
     display: flex;
-    flex-direction: row;
+    flex-direction: row; /* Altera para linha para economizar espaço */
     align-items: center;
     gap: 10px;
     white-space: nowrap;
@@ -634,7 +642,7 @@ footer {
 }
 
 .master-volume-control .master-volume-slider {
-    width: 100px;
+    width: 100px; /* Aumenta a largura para melhor controle */
 }
 
 .master-volume-control .volume-value {
@@ -642,6 +650,7 @@ footer {
     color: #00d4ff;
 }
 
+/* Score Modal - Modificado para PDFs */
 .score-modal {
     display: none;
     position: fixed;
@@ -723,6 +732,7 @@ footer {
     transform: translateY(-1px);
 }
 
+/* Botões específicos com cores diferentes para PDF */
 #scoreDownload:hover {
     background: #4ecdc4;
     color: #000;
@@ -772,6 +782,7 @@ footer {
     min-height: 0;
 }
 
+/* Estilos para iframe PDF */
 #scoreModalPDF {
     width: 100%;
     height: 100%;
@@ -800,6 +811,7 @@ footer {
     color: #888;
 }
 
+/* Scrollbar para o modal */
 .score-modal-body::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -818,38 +830,7 @@ footer {
     background: rgba(0, 212, 255, 0.5);
 }
 
-#pdf-viewer-container {
-    flex: 1;
-    overflow: auto;
-    text-align: center;
-    width: 100%;
-    height: 100%;
-}
-
-#pdf-canvas {
-    border: 1px solid #555;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-}
-
-#pdf-navigation {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    padding: 10px 0;
-    color: #fff;
-}
-
-#pdf-navigation button {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-#zoomInBtn, #zoomOutBtn {
-    font-size: 24px;
-    font-weight: bold;
-}
-
+/* Responsive Design */
 @media (max-width: 1024px) {
     .track-item {
         flex-direction: column;
@@ -987,6 +968,7 @@ footer {
     }
 }
 
+/* Media Queries para Mobile */
 @media (max-width: 640px) {
     .container {
         flex-direction: column;
@@ -1025,7 +1007,7 @@ footer {
     }
 
     .transport-controls {
-        flex-direction: column;
+        flex-direction: column; /* Empilha os controles do footer */
         padding: 12px;
         gap: 8px;
     }
@@ -1048,26 +1030,26 @@ footer {
     .reset-btn {
         padding: 6px 12px;
         font-size: 10px;
-        width: 100px;
+        width: 100px; /* Torna o botão reset mais compacto */
     }
 
     .speed-controls {
-        display: none;
+        display: none; /* Oculta os controles de velocidade no mobile, ou reposiciona se necessário */
     }
 
     .playback-controls {
-        order: 2;
+        order: 2; /* Coloca os controles de play/pause abaixo do reset */
         margin-top: 10px;
     }
 
     .time-display {
-        order: 3;
+        order: 3; /* Coloca o time-display abaixo dos controles de play/pause */
         margin-top: 5px;
         justify-content: center;
     }
 
     .master-volume-control {
-        position: static;
+        position: static; /* Remove o posicionamento absoluto para mobile */
         transform: none;
         width: 100%;
         justify-content: center;
@@ -1080,7 +1062,7 @@ footer {
     }
 
     .brucardoso a {
-        display: block;
+        display: block; /* Quebra linha no mobile */
     }
 
     .fit-picture {
@@ -1197,22 +1179,22 @@ footer {
     .reset-btn {
         padding: 3px 6px;
         font-size: 10px;
-        width: 100px;
+        width: 100px; /* Torna o botão reset mais compacto */
     }
 
     .playback-controls {
-        order: 2;
+        order: 2; /* Coloca os controles de play/pause abaixo do reset */
         margin-top: 0px;
     }
 
     .time-display {
-        order: 3;
+        order: 3; /* Coloca o time-display abaixo dos controles de play/pause */
         margin-top: 0px;
         justify-content: center;
     }
 
     .master-volume-control {
-        position: static;
+        position: static; /* Remove o posicionamento absoluto para mobile */
         transform: none;
         width: 100%;
         justify-content: center;
