@@ -26,6 +26,8 @@ class WebDAW {
             { name: 'Violino 2', file: 'audio/Violino 2.mp3', color: '#4ecdc4' },
             { name: 'Violino 3', file: 'audio/Violino 3.mp3', color: '#45b7d1' },
             { name: 'Clarinete', file: 'audio/Clarinete.mp3', color: '#96ceb4' },
+            { name: 'Flauta', file: 'audio/Flauta.mp3', color: '#7ec42eff' },
+            { name: 'Trumpete', file: 'audio/Trumpete.mp3', color: '#002fffff' },
             { name: 'Cello', file: 'audio/Cello.mp3', color: '#feca57' },
             { name: 'Piano', file: 'audio/Piano.mp3', color: '#ff9ff3' },
             { name: 'Guitarra', file: 'audio/Guitarra.mp3', color: '#54a0ff' },
