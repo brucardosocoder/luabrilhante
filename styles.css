@@ -84,6 +84,11 @@ header {
     height: 40px;
 }
 
+.song-info img {
+    width: 40px;
+    height: 40px;
+}
+
 .song-title h1 {
     display: flex;
     align-items: center;
